@@ -1,0 +1,1 @@
+(x v y v y) ^ (~x v y v ~x) ^ (~x v ~y v ~y) 
