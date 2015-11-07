@@ -17,13 +17,14 @@ public class DNAStrand {
     
     /**Generates a random DNAStrand using only A, T, and C
      * 
+     * @param length Length of the strand to be created
      */
-    public DNAStrand() {
-        strand = new ArrayList<>(15);
+    public DNAStrand(int length) {
+        strand = new ArrayList<>(length);
         char nucleatide;
         int num;
         Random rand = new Random(System.currentTimeMillis());
-        for (int i=0; i<15; i++) {
+        for (int i=0; i<length; i++) {
             num = rand.nextInt(3);
             switch(num) {
                 case 0:
@@ -46,7 +47,7 @@ public class DNAStrand {
      */
     @Override
     public DNAStrand clone() {
-        DNAStrand clone = new DNAStrand();
+        DNAStrand clone = new DNAStrand(this.strand.size());
         clone.strand.clear();
         for(char nucleatide : this.strand) {
             clone.strand.add(nucleatide);
@@ -61,5 +62,9 @@ public class DNAStrand {
             str.append(nucleatide);
         }
         return str.toString();
+    }
+    
+    public int size() {
+        return strand.size();
     }
 }

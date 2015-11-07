@@ -1,14 +1,13 @@
 % NUPACK 3.0
 % Program: complexes
-% Start time: Sat Oct 24 21:40:26 2015 PST
+% Start time: Fri Oct 30 16:52:04 2015 PST
 %
-% Command: ./complexes -mfe -degenerate imp 
-% Maximum complex size to enumerate: 1
-% Number of complexes from enumeration: 2
+% Command: ./complexes -material DNA -ordered -mfe -degenerate -quiet imp 
+% Maximum complex size to enumerate: 2
+% Number of complexes from enumeration: 5
 % Additional complexes from .list file: 0
-% Total number of permutations to calculate: 2
-% Parameters: RNA, 1995
-% Dangles setting: 1
+% Total number of permutations to calculate: 5
+% Parameters: % Dangles setting: 1
 % Temperature (C): 37.0
 % Sodium concentration: 1.0000 M
 % Magnesium concentration: 0.0000 M
@@ -17,8 +16,6 @@
 %
 % Number of strands: 2
 % id sequence
-%  1 ATGCTGACAGT
-%  2 ACTCAGTCGTA
+%  1 CTTCTAACACT
+%  2 ACTCACTCACA
 % T = 37.0
-1	1	1	
-2	1	2	
