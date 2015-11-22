@@ -21,7 +21,7 @@ public class DNAStrand {
      */
     public DNAStrand(int length) {
         strand = new ArrayList<>(length);
-        char nucleatide;
+        char nucleotide;
         int num;
         Random rand = new Random();
         //Random rand = new Random(System.currentTimeMillis());
@@ -29,27 +29,40 @@ public class DNAStrand {
             num = rand.nextInt(3);
             switch(num) {
                 case 0:
-                    nucleatide = 'A';
+                    nucleotide = 'A';
                     break;
                 case 1:
-                    nucleatide = 'T';
+                    nucleotide = 'T';
                     break;
                 default:
-                    nucleatide = 'C';
+                    nucleotide = 'C';
                     break;
             }
-            strand.add(nucleatide);
+            strand.add(i, nucleotide);
         }
     }
     
-    /**Randomly generates a new nucleatide at the position specified.  Will not
-     * be the same nucleatide that was at the position before.
+    /**Randomly generates a new nucleotide at the position specified.  Will not
+ be the same nucleotide that was at the position before.
      * 
-     * @param position Position of the nucleatide to be changed.  Numbering starts
-     * at zero.
+     * @param position Position of the nucleotide to be changed.  Numbering starts
+ at zero.
      */
-    public void newNucleatide(int position) {
-        
+    public void newNucleotide(int position) throws IllegalArgumentException{
+        if(position < 0 || position >= strand.size())
+            throw new IllegalArgumentException("Nucleotide index out of strand array bounds.\n");
+        char old = strand.get(position);
+        char newChar;
+        Random rand = new Random(System.currentTimeMillis());
+        int num = rand.nextInt(2);
+        if(old == 'A'){
+            newChar = (num == 0)?('T'):('C');
+        } else if (old == 'T') {
+            newChar = (num == 0)?('A'):('C');
+        } else { //'C'
+            newChar = (num == 0)?('A'):('T');
+        }
+        strand.set(position, newChar);
     }
     
     /**Makes a deep copy of the DNAStrand
@@ -60,8 +73,8 @@ public class DNAStrand {
     public DNAStrand clone() {
         DNAStrand clone = new DNAStrand(this.strand.size());
         clone.strand.clear();
-        for(char nucleatide : this.strand) {
-            clone.strand.add(nucleatide);
+        for(char nucleotide : this.strand) {
+            clone.strand.add(nucleotide);
         }
         return clone;
     }
@@ -69,8 +82,8 @@ public class DNAStrand {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        for(char nucleatide : this.strand) {
-            str.append(nucleatide);
+        for(char nucleotide : this.strand) {
+            str.append(nucleotide);
         }
         return str.toString();
     }

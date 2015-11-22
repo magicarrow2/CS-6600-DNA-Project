@@ -110,7 +110,7 @@ public class StrandTest {
         tempFile.createNewFile();
         tempFile.setReadable(true);
         tempFile.setWritable(true);
-        ProcessBuilder proc = new ProcessBuilder("./prob", "-pseudo", "-material", "dna", "-multi",  inputFilenameStem);
+        ProcessBuilder proc = new ProcessBuilder("./prob", "-material", "dna", "-multi",  inputFilenameStem);
         proc.environment().put("NUPACKHOME", home);
         proc.redirectOutput(tempFile);
         proc.directory(new File(bin));
