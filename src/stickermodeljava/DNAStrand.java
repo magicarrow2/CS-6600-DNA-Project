@@ -23,7 +23,8 @@ public class DNAStrand {
         strand = new ArrayList<>(length);
         char nucleatide;
         int num;
-        Random rand = new Random(System.currentTimeMillis());
+        Random rand = new Random();
+        //Random rand = new Random(System.currentTimeMillis());
         for (int i=0; i<length; i++) {
             num = rand.nextInt(3);
             switch(num) {
@@ -39,6 +40,16 @@ public class DNAStrand {
             }
             strand.add(nucleatide);
         }
+    }
+    
+    /**Randomly generates a new nucleatide at the position specified.  Will not
+     * be the same nucleatide that was at the position before.
+     * 
+     * @param position Position of the nucleatide to be changed.  Numbering starts
+     * at zero.
+     */
+    public void newNucleatide(int position) {
+        
     }
     
     /**Makes a deep copy of the DNAStrand
