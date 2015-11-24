@@ -16,9 +16,9 @@ import static org.junit.Assert.*;
  *
  * @author jared
  */
-public class ConsoleIOTest {
+public class SATHandlerTest {
     
-    public ConsoleIOTest() {
+    public SATHandlerTest() {
     }
     
     @BeforeClass
@@ -38,38 +38,38 @@ public class ConsoleIOTest {
     }
 
     /**
-     * Test of get3SatFromInputFile method, of class ConsoleIO.
+     * Test of get3SatFromInputFile method, of class SATHandler.
      */
     @Test
     public void testGet3SatFromInputFile() throws Exception {
         System.out.println("get3SatFromInputFile");
         Sat expResult = null;
-        Sat result = ConsoleIO.get3SatFromInputFile();
+        Sat result = SATHandler.get3SatFromInputFile();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
     /**
-     * Test of get3SatFromString method, of class ConsoleIO.
+     * Test of get3SatFromString method, of class SATHandler.
      */
     @Test
     public void testGet3SatFromString() throws Exception {
         System.out.println("get3SatFromString");
         Sat expResult = null;
-        Sat result = ConsoleIO.get3SatFromString();
+        Sat result = SATHandler.get3SatFromString();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
     /**
-     * Test of displayHelp method, of class ConsoleIO.
+     * Test of displayHelp method, of class SATHandler.
      */
     @Test
     public void testDisplayHelp() {
         System.out.println("displayHelp");
-        ConsoleIO.displayHelp();
+        SATHandler.displayHelp();
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }

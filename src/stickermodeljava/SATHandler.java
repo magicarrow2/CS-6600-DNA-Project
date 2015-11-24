@@ -11,11 +11,11 @@ import java.io.InputStreamReader;
 import java.io.File;
 import java.io.FileReader;
 
-/**This class handles the functions related to getting information to or from the user.
+/**This class handles the functions related to getting SAT info.
  *
  * @author jared
  */
-public class ConsoleIO {
+public class SATHandler {
     public static Sat get3SatFromInputFile() throws IOException {
         
         //Get filename of 3-SAT problem.
@@ -58,18 +58,5 @@ public class ConsoleIO {
         if(clauses.length == 1)
             throw new IOException("Problem not in CNF format or has arbitrary answer.\n");
         return new Sat(clauses);
-    }
-    
-    public static void displayHelp() {
-        //Display command-line help
-        System.out.print("StickerModelJava.java [3-SATfile] [outputFile]\n"
-                + "  -h     Display help menu\n"
-                + "\n"
-                + "The 3-SAT input file must consist of a single line of characters in CNF format.\n"
-                + "(x1 v y1 v y1) ^ (x2 v ~y1 v ~x1) ^ (~x1 v y1 v x2)\n"
-                + "^ = AND, v = OR, ~ = NOT\n"
-                + "Equation may not contain \"v\" in variable names"
-                + "\n"
-                + "Output file will be populated with DNA strands and corresponding variable names.\n");
     }
 }

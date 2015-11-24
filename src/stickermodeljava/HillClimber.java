@@ -58,7 +58,7 @@ public class HillClimber {
         boolean timedOut = false;
         
         lastNumIterations = 1;
-        while(time <= timeLimitSeconds && NonComboProbability < minNonComboProbability) {
+        while((time < timeLimitSeconds || timeLimitSeconds < 0) && NonComboProbability < minNonComboProbability) {
             //Figure out which strand is the most problematic
             String structure = lastRunTestResults.getSecondaryStructure();
             int index = findProblemStrand(structure);
@@ -86,7 +86,7 @@ public class HillClimber {
         
             //Exit when timeLimitSeconds is hit or minNonComboProbability is hit
             time = java.time.Instant.now().getEpochSecond() - start;
-            if(time > timeLimitSeconds) timedOut = true;
+            if(time > timeLimitSeconds && timeLimitSeconds > 0) timedOut = true;
             lastNumIterations++;
         }
         

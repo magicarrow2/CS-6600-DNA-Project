@@ -22,7 +22,7 @@ public class StickerModelJava {
     public static void main(String[] args) {
         //Display the help information if in arguments
         if (args.length > 0 && args[0].contains("-h")) {
-            ConsoleIO.displayHelp();
+            displayHelp();
             System.exit(0);
         } 
         System.out.print("Executing from: " + System.getProperty("user.dir")+"\n");
@@ -34,17 +34,17 @@ public class StickerModelJava {
             if (args.length > 0) {
                 try {
                     System.out.print("Opening file: " + args[0] + "\n");
-                    sat = ConsoleIO.get3SatFromInputFile(args[0]);
+                    sat = SATHandler.get3SatFromInputFile(args[0]);
                 } catch (IOException e) {
                     System.out.print("File not found\n");
-                    sat = ConsoleIO.get3SatFromString();
+                    sat = SATHandler.get3SatFromString();
                 }
             } else {  //With no arguments, ask for the input from the user
                 try {
-                    sat = ConsoleIO.get3SatFromInputFile();
+                    sat = SATHandler.get3SatFromInputFile();
                 } catch (IOException e) {
                     System.out.print("File not found\n");
-                    sat = ConsoleIO.get3SatFromString();
+                    sat = SATHandler.get3SatFromString();
                 }
             }
             
@@ -58,7 +58,12 @@ public class StickerModelJava {
             
             //Run HillClimber to get a set of acceptable strands
             HillClimber climber = new HillClimber(sat);
-            ArrayList<DNAStrand> strands = climber.run(10, 0.85, 15);
+            ArrayList<DNAStrand> strands;
+            if(args.length >= 3) {
+                strands = climber.run(Integer.parseInt(args[2]), 0.85, 15);
+            } else {
+                strands = climber.run(-1, 0.85, 15);
+            }
                     
             /*
             // Generate initial state of DNA strands.  Make twice as many strands
@@ -103,6 +108,7 @@ public class StickerModelJava {
             for(DNAStrand strand : strands) {
                 out.write(strand.toString() + "\n");
             }
+            out.close();
         } catch (IOException e) {
             System.out.print(e.getMessage());
             System.exit(-1);
@@ -110,4 +116,18 @@ public class StickerModelJava {
         
     }
     
+    private static void displayHelp() {
+        //Display command-line help
+        System.out.print("StickerModelJava.java [3-SATfile] [outputFile] [timeLimitSeconds]\n"
+                + "  -h     Display help menu\n"
+                + "\n"
+                + "The 3-SAT input file must consist of a single line of characters in CNF format.\n"
+                + "(x1 v y1 v y1) ^ (x2 v ~y1 v ~x1) ^ (~x1 v y1 v x2)\n"
+                + "^ = AND, v = OR, ~ = NOT\n"
+                + "Equation may not contain \"v\" in variable names\n"
+                + "\n"
+                + "Output file will be populated with DNA strands and corresponding variable names.\n"
+                + "TimeLimitSeconds is an integer specifying the max time in seconds the hill climber can search.  "
+                + "Enter a negative number or leave blank to have unbounded time limit.\n");
+    }
 }
