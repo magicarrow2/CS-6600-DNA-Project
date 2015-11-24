@@ -1,28 +1,45 @@
-<!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="UTF-8">
-    <title>CS 6600 DNA Computing Project by magicarrow2</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-  </head>
-  <body>
-    <section class="page-header">
-      <h1 class="project-name">CS 6600 DNA Computing Project</h1>
-      <h2 class="project-tagline">This is a project for a master&#39;s class for turning a 3-SAT into a set of unique, straight, non-combining DNA strands representing the true and false states of the variables in the 3-SAT problem.</h2>
-      <a href="https://github.com/magicarrow2/CS-6600-DNA-Project" class="btn">View on GitHub</a>
-      <a href="https://github.com/magicarrow2/CS-6600-DNA-Project/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/magicarrow2/CS-6600-DNA-Project/tarball/master" class="btn">Download .tar.gz</a>
-    </section>
+<!doctype html>
+<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
+<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on https://github.com/jonrohan -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <section class="main-content">
-      <h3>
+  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen">
+  <link rel="stylesheet" href="stylesheets/github-dark.css">
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="javascripts/script.js"></script>
+
+  <title>CS 6600 DNA Computing Project</title>
+  <meta name="description" content="This is a project for a master&#39;s class for turning a 3-SAT into a set of unique, straight, non-combining DNA strands representing the true and false states of the variables in the 3-SAT problem.">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <header>
+      <h1 class="title">CS 6600 DNA Computing Project</h1>
+    </header>
+    <div id="container">
+      <p class="tagline">This is a project for a master&#39;s class for turning a 3-SAT into a set of unique, straight, non-combining DNA strands representing the true and false states of the variables in the 3-SAT problem.</p>
+      <div id="main" role="main">
+        <div class="download-bar">
+        <div class="inner">
+          <a href="https://github.com/magicarrow2/CS-6600-DNA-Project/tarball/master" class="download-button tar"><span>Download</span></a>
+          <a href="https://github.com/magicarrow2/CS-6600-DNA-Project/zipball/master" class="download-button zip"><span>Download</span></a>
+          <a href="https://github.com/magicarrow2/CS-6600-DNA-Project" class="code">View CS 6600 DNA Computing Project on GitHub</a>
+        </div>
+        <span class="blc"></span><span class="trc"></span>
+        </div>
+        <article class="markdown-body">
+          <h3>
 <a id="word-of-caution" class="anchor" href="#word-of-caution" aria-hidden="true"><span class="octicon octicon-link"></span></a>Word of Caution</h3>
 
-<p>This software will only run on in Linux.</p>
+<p>This software will only run on a Linux box.</p>
 
 <h3>
 <a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h3>
@@ -48,40 +65,42 @@
 <h3>
 <a id="demonstration" class="anchor" href="#demonstration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demonstration</h3>
 
-<p>We begin with creating an input file.  The 3-SAT file contains a 3-SAT equation in Conjunctive Normal Form (CNF).</p> 
+<p>We begin with creating an input file.  The 3-SAT file contains a 3-SAT equation in Conjunctive Normal Form (CNF).  </p>
 
 <p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Input%20File.jpeg" alt="input file"></p>
 
-<p>To make this work, the compiled jar file must be located in the same folder that the nupack4.0.3 folder is in.  The program is run with "java -jar StickerModelJava.jar [inputFile] [outputFile] [timeLimitinSeconds]".  All of the arguments are optional, but are position based.  If -h is used for the argument, the program displays a help page.  With no arguments, the program will ask for an input file or 3-SAT equation from the user.</p>
+<p>To make this work, the compiled jar file must be located in the same folder that the nupack4.0.3 folder is in.</p>
 
 <p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Demo2.png" alt="demo2"></p>
 
-<p>The program will run for some time then output the results to the screen and to the file specified in the command arguments.  If no output file was specified, the results will be found in a file named "Results.txt".</p>
-
 <p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Demo%202%20Output%20File.jpeg" alt="demo 2 output file"></p>
 
-<p>The probability of straigtness and not combining is given as a number between 0.0 and 1.0.  As seen in this demonstration, 10 seconds is not long enough to find a valid solution.</p>
-
-<h3>
-<a id="how-it-works" class="anchor" href="#how-it-works" aria-hidden="true"><span class="octicon octicon-link"></span></a>How It Works</h3>
-
-<p>This program uses a hill climbing algorithm with simulated annealing to find the solution.  The initial solution is chosen randomly.  The probability of the equilibrium structure of the DNA strands being straight and non-hybridizing is the value used to score the solution.  Mutations in the solution are applied to the strand with the most hybridizing bases.  Mutations are made in one of two ways: a nucleotide in a hybridization area is changed or an entire strand is replaced with a random strand.  The method of mutation is chosen randomly.  The annealing part of the algorithm slowly reduces the probability of replacing an entire strand and increases the probability of changing only a single nucleotide.</p>
-
-<p>The <a href="http://www.nupack.org/">NuPack DNA analytics software</a> is used to find the probability of hybridization and the lowest energy secondary structure (equilibrium structure) of the DNA strands.</p>
+<p>The program will try to get a 3-SAT equation from the user even if an input file is not given.</p>
 
 <h3>
 <a id="acknowledgements" class="anchor" href="#acknowledgements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Acknowledgements</h3>
 
 <p>This project was started as a project for a CS6600 Intelligent Systems class.  The application incorporates calls to the <a href="http://www.nupack.org/">NuPack DNA analytics software</a>.</p>
+        </article>
+      </div>
+    </div>
+    <footer>
+      <div class="owner">
+      <p><a href="https://github.com/magicarrow2" class="avatar"><img src="https://avatars3.githubusercontent.com/u/10986729?v=3&amp;s=60" width="48" height="48"></a> <a href="https://github.com/magicarrow2">magicarrow2</a> maintains <a href="https://github.com/magicarrow2/CS-6600-DNA-Project">CS 6600 DNA Computing Project</a></p>
 
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/magicarrow2/CS-6600-DNA-Project">CS 6600 DNA Computing Project</a> is maintained by <a href="https://github.com/magicarrow2">magicarrow2</a>.</span>
 
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
-      </footer>
-
-    </section>
+      </div>
+      <div class="creds">
+        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br>theme by <a href="https://twitter.com/jonrohan/">Jon Rohan</a></small>
+      </div>
+    </footer>
+  </div>
+  <div class="current-section">
+    <a href="#top">Scroll to top</a>
+    <a href="https://github.com/magicarrow2/CS-6600-DNA-Project/tarball/master" class="tar">tar</a><a href="https://github.com/magicarrow2/CS-6600-DNA-Project/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
+    <p class="name"></p>
+  </div>
 
   
-  </body>
+</body>
 </html>
