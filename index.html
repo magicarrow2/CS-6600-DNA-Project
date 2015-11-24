@@ -22,7 +22,7 @@
       <h3>
 <a id="word-of-caution" class="anchor" href="#word-of-caution" aria-hidden="true"><span class="octicon octicon-link"></span></a>Word of Caution</h3>
 
-<p>This software will only run on a Linux box.</p>
+<p>This software will only run on in Linux.</p>
 
 <h3>
 <a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h3>
@@ -48,18 +48,26 @@
 <h3>
 <a id="demonstration" class="anchor" href="#demonstration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demonstration</h3>
 
-<p>We begin with creating an input file.  The 3-SAT file contains a 3-SAT equation in Conjunctive Normal Form (CNF).  </p>
+<p>We begin with creating an input file.  The 3-SAT file contains a 3-SAT equation in Conjunctive Normal Form (CNF).</p> 
 
-<p>To make this work, the compiled jar file must be located in the same folder that the nupack4.0.3 folder is in.  The program is run with "java -jar StickerModelJava.jar [inputFile] [outputFile] [timeLimitinSeconds]".  All of the arguments are optional, but are position based.  If -h is used for the argument, the program displays a help page.  With no arguments, the program will ask for an input file or 3-SAT equation from the user.
-<img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Input%20File.jpeg" alt="input file"></p>
+<p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Input%20File.jpeg" alt="input file"></p>
 
-<p>To make this work, the compiled jar file must be located in the same folder that the nupack4.0.3 folder is in.</p>
+<p>To make this work, the compiled jar file must be located in the same folder that the nupack4.0.3 folder is in.  The program is run with "java -jar StickerModelJava.jar [inputFile] [outputFile] [timeLimitinSeconds]".  All of the arguments are optional, but are position based.  If -h is used for the argument, the program displays a help page.  With no arguments, the program will ask for an input file or 3-SAT equation from the user.</p>
 
 <p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Demo2.png" alt="demo2"></p>
 
+<p>The program will run for some time then output the results to the screen and to the file specified in the command arguments.  If no output file was specified, the results will be found in a file named "Results.txt".</p>
+
 <p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Demo%202%20Output%20File.jpeg" alt="demo 2 output file"></p>
 
-<p>The program will try to get a 3-SAT equation from the user even if an input file is not given.</p>
+<p>The probability of straigtness and not combining is given as a number between 0.0 and 1.0.  As seen in this demonstration, 10 seconds is not long enough to find a valid solution.</p>
+
+<h3>
+<a id="how-it-works" class="anchor" href="#how-it-works" aria-hidden="true"><span class="octicon octicon-link"></span></a>How It Works</h3>
+
+<p>This program uses a hill climbing algorithm with simulated annealing to find the solution.  The initial solution is chosen randomly.  The probability of the equilibrium structure of the DNA strands being straight and non-hybridizing is the value used to score the solution.  Mutations in the solution are applied to the strand with the most hybridizing bases.  Mutations are made in one of two ways: a nucleotide in a hybridization area is changed or an entire strand is replaced with a random strand.  The method of mutation is chosen randomly.  The annealing part of the algorithm slowly reduces the probability of replacing an entire strand and increases the probability of changing only a single nucleotide.</p>
+
+<p>The <a href="http://www.nupack.org/">NuPack DNA analytics software</a> is used to find the probability of hybridization and the lowest energy secondary structure (equilibrium structure) of the DNA strands.</p>
 
 <h3>
 <a id="acknowledgements" class="anchor" href="#acknowledgements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Acknowledgements</h3>
