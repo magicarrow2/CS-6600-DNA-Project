@@ -19,7 +19,7 @@ public class StickerModelJava {
     /**
      * @param args the command line arguments
      */
-    public static void main2(String[] args) {
+    public static void main(String[] args) {
         //Display the help information if in arguments
         if (args.length > 0 && args[0].contains("-h")) {
             displayHelp();
