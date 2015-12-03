@@ -23,8 +23,8 @@ public class DNAStrand {
         strand = new ArrayList<>(length);
         char nucleotide;
         int num;
-        Random rand = new Random();
-        //Random rand = new Random(System.currentTimeMillis());
+        //Random rand = new Random();
+        Random rand = new Random(System.currentTimeMillis());
         for (int i=0; i<length; i++) {
             num = rand.nextInt(3);
             switch(num) {

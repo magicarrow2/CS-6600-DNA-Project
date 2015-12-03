@@ -61,17 +61,5 @@ public class SATHandlerTest {
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of displayHelp method, of class SATHandler.
-     */
-    @Test
-    public void testDisplayHelp() {
-        System.out.println("displayHelp");
-        SATHandler.displayHelp();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-    
+    }    
 }

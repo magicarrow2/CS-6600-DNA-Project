@@ -19,7 +19,7 @@ public class StickerModelJava {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main2(String[] args) {
         //Display the help information if in arguments
         if (args.length > 0 && args[0].contains("-h")) {
             displayHelp();
@@ -60,7 +60,7 @@ public class StickerModelJava {
             HillClimber climber = new HillClimber(sat);
             ArrayList<DNAStrand> strands;
             if(args.length >= 3) {
-                strands = climber.run(Integer.parseInt(args[2]), 0.85, 15);
+                strands = climber.run(Integer.parseInt(args[2]), 0.85, 5);
             } else {
                 strands = climber.run(-1, 0.85, 15);
             }

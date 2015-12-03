@@ -21,6 +21,7 @@ public class HillClimber {
     private double lastRunCombinationProbability;
     private TestResults lastRunTestResults;
     private int lastNumIterations;
+    private Random random;
 
     public HillClimber(Sat sat){
         this.sat = sat;
@@ -28,6 +29,7 @@ public class HillClimber {
         lastRunTime = -1;
         lastRunCombinationProbability = -1.0;
         lastNumIterations = 0;
+        random = new Random(System.currentTimeMillis());
     }
     
     public ArrayList<DNAStrand> run(int timeLimitSeconds, double minNonComboProbability, int strandSize) throws IOException {
@@ -53,8 +55,6 @@ public class HillClimber {
         double s_prime;
         double delta_s;
         boolean useNewStrand;
-        //Random rand = new Random();
-        Random rand = new Random(System.currentTimeMillis());
         boolean timedOut = false;
         
         lastNumIterations = 1;
@@ -65,7 +65,7 @@ public class HillClimber {
             
             //Randomly (with decaying probability) replace a whole DNA strand with a 
             //  random strand or fix a part of a strand.  This is the annealing part.
-            useNewStrand = rand.nextDouble() <= annealingProbability;
+            useNewStrand = random.nextDouble() <= annealingProbability;
             if(useNewStrand) {
                 strands.set(index, new DNAStrand(strandSize));
             } else {
@@ -82,7 +82,12 @@ public class HillClimber {
             s_prime = NonComboProbability;
             delta_s = s - s_prime;
             temperature = (-delta_s)/log(annealingProbability);
-            annealingProbability = Math.pow(Math.E, (-delta_s)/temperature);
+            double temp = Math.pow(Math.E, (-delta_s)/temperature);
+            if (temp < annealingProbability)
+                annealingProbability = temp;
+            
+            //Output results to user
+            
         
             //Exit when timeLimitSeconds is hit or minNonComboProbability is hit
             time = java.time.Instant.now().getEpochSecond() - start;
@@ -132,22 +137,38 @@ public class HillClimber {
         int maxBondCount = 0;
         int index = -1;
         for(int i=0; i<strands.length; i++) {
-            String temp = strands[i].replaceAll("\\.", "");
-            if (temp.length() > maxBondCount) index = i;
+            int count = 0;
+            for(int j=0; j<strands[i].length(); j++) {
+                char temp = strands[i].charAt(j);
+                if(temp == '(' || temp == ')') count++;
+            }
+            if (count > maxBondCount) {
+                maxBondCount = count;
+                index = i;
+            }
         }
         return index;
     }
 
     /**Finds the index of a nucleotide that has hybridized with another strand.
      * 
-     * @param structure
-     * @param index
-     * @return 
+     * @param structure Structure in dot-parens form of multiple strands together
+     * @param index Index representing which strand in the structure
+     * @return Index of randomly chosen defective nucleotide in the selected strand
      */
     private int getDefectiveNucleotide(String structure, int index) {
+        //Split structure into strands
         String[] strands = structure.split("\\+");
-        int nucleotideNum = strands[index].indexOf('(');
-        if(nucleotideNum < 0) nucleotideNum = strands[index].indexOf(')');
-        return nucleotideNum;
+        
+        //Make list of indicies of the hybridized nucleotides
+        ArrayList<Integer> nucleotideIndicies = new ArrayList<>();
+        for(int i=0; i<strands[index].length(); i++){
+            char nucleotide = strands[index].charAt(i);
+            if(nucleotide == '(' || nucleotide == ')')
+                nucleotideIndicies.add(i);
+        }
+        
+        //Get a random index from the list and return it.
+        return nucleotideIndicies.get(random.nextInt(nucleotideIndicies.size()));
     }
 }
