@@ -127,8 +127,13 @@ public class StrandTest {
         BufferedReader in = new BufferedReader(inStream);
         while(!in.readLine().contains("% Probability:"));  //Skip past header stuff
         String probString = in.readLine();
-        BigDecimal dec = new BigDecimal(probString);
-        double probability = dec.doubleValue();
+        double probability;
+        if(probString.contains("nan")) {
+            probability = 1.0;
+        } else {
+            BigDecimal dec = new BigDecimal(probString);
+            probability = dec.doubleValue();
+        }
         
         return probability;
     }

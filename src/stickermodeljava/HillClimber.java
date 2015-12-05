@@ -5,6 +5,8 @@
  */
 package stickermodeljava;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import static java.lang.Math.log;
 import java.util.ArrayList;
@@ -21,7 +23,8 @@ public class HillClimber {
     private double lastRunCombinationProbability;
     private TestResults lastRunTestResults;
     private int lastNumIterations;
-    private Random random;
+    private final Random random = new Random(System.currentTimeMillis());
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     public HillClimber(Sat sat){
         this.sat = sat;
@@ -29,11 +32,18 @@ public class HillClimber {
         lastRunTime = -1;
         lastRunCombinationProbability = -1.0;
         lastNumIterations = 0;
-        random = new Random(System.currentTimeMillis());
+    }
+    
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.addPropertyChangeListener(listener);
+    }
+    
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.removePropertyChangeListener(listener);
     }
     
     public ArrayList<DNAStrand> run(int timeLimitSeconds, double minNonComboProbability, int strandSize) throws IOException {
-        double NonComboProbability = 0.0;
+        double NonComboProbability;
         //Create initial DNA strand list
         int number = sat.getNumUniqueVariables() * 2;  //Need a strand for true and false states of each variable.
         ArrayList<DNAStrand> strands = new ArrayList<>();
@@ -76,7 +86,9 @@ public class HillClimber {
             }
             
             //Test again and fix new temperature and annealing probability
+            TestResults oldTest = lastRunTestResults;
             lastRunTestResults = tester.runAllTests(strands);
+            pcs.firePropertyChange("lastRunTestResults", oldTest, lastRunTestResults);
             s = NonComboProbability;
             NonComboProbability = lastRunTestResults.getOverallNoncombiningProbability();
             s_prime = NonComboProbability;

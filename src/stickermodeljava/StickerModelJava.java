@@ -8,13 +8,14 @@ package stickermodeljava;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 /**
  *
  * @author jared
  */
-public class StickerModelJava {
+public class StickerModelJava implements Serializable {
 
     /**
      * @param args the command line arguments
@@ -64,29 +65,6 @@ public class StickerModelJava {
             } else {
                 strands = climber.run(-1, 0.85, 15);
             }
-                    
-            /*
-            // Generate initial state of DNA strands.  Make twice as many strands
-            //  as there are unique variables in the 3-SAT problem.
-            //
-            ArrayList<DNAStrand> strands = new ArrayList<>();
-            int count = sat.getNumUniqueVariables() * 2;
-            for(int i = 0; i<count; i++) {
-                strands.add(new DNAStrand(15));
-            }
-            
-            // Perform search for unique strands that are straight
-            StrandTest tester = new StrandTest();
-            double prob = tester.getStraightnessProbability(strands.get(0));
-            System.out.print("Probability: " + prob + "\n");
-             
-            // Check to see if they will combine with other strands.  If so,
-            // then go back to searching for unique straight strands on the ones
-            // that stick.
-            //
-            String structure = tester.getSecondaryStructure(strands);
-            System.out.print("Structure: " + structure + "\n");
-            */
             
             //Write the results to the screen
             System.out.print("\nNumber of iterations: " + climber.getLastNumIterations() + "\n");

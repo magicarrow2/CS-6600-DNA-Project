@@ -5,6 +5,14 @@
  */
 package StickerModelGui;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.PrintStream;
+import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
+import stickermodeljava.StickerModelJava;
+import stickermodeljava.TestResults;
+
 /**
  *
  * @author jared
@@ -16,6 +24,16 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         initComponents();
+        
+        //Setup the resultsArea as the standard out
+        PrintStream out = new PrintStream(new TextAreaOutputStream(resultsArea));
+        System.setOut(out);
+        System.setErr(out);
+        
+        
+        
+        //Initialize button states
+        resetButton.setEnabled(false);
     }
 
     /**
@@ -41,11 +59,13 @@ public class MainFrame extends javax.swing.JFrame {
         resetButton = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        inputFileField = new javax.swing.JTextField();
+        outputFileField = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        resultsArea = new javax.swing.JTextArea();
+        jLabel8 = new javax.swing.JLabel();
+        timeLimitField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -125,11 +145,19 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel6.setText("Output File");
 
-        jLabel7.setText("Results");
+        inputFileField.setText("test.txt");
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        outputFileField.setText("testOutput.txt");
+
+        jLabel7.setText("Console Output");
+
+        resultsArea.setColumns(20);
+        resultsArea.setRows(5);
+        jScrollPane1.setViewportView(resultsArea);
+
+        jLabel8.setText("Time Limit");
+
+        timeLimitField.setText("10");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -139,22 +167,6 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(simButton)
-                                .addGap(18, 18, 18)
-                                .addComponent(resetButton))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jLabel6))
-                                .addGap(17, 17, 17)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jTextField1)
-                                    .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE)))
-                            .addComponent(jLabel7))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
@@ -162,7 +174,27 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(simButton)
+                                .addGap(18, 18, 18)
+                                .addComponent(resetButton))
+                            .addComponent(jLabel7)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel6))
+                                .addGap(17, 17, 17)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(inputFileField)
+                                    .addComponent(outputFileField, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(timeLimitField, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -171,11 +203,13 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(inputFileField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8)
+                    .addComponent(timeLimitField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(outputFileField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -198,27 +232,57 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void simButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simButtonActionPerformed
-        if(simButton.getText().equals("Run")){
-            simButton.setText("Stop");
-            
-            //Start the sim
-            
-        } else /*if (simButton.getText().equals("Stop"))*/ {
-            simButton.setText("Run");
-            
-            //Stop the sim
-        } 
+        //Start the sim
+//        String[] args= {inputFileField.getText(), outputFileField.getText(), timeLimitField.getText()};
+//        new Thread(new Runnable() {
+//            public void run() {
+//                StickerModelJava.main(args);
+//            }
+//        }).start();
+
+        //Clear console output
+        resultsArea.setText(null);
         
+        //Create new sim
+        sim = new StickerModelExecutor(inputFileField.getText(), outputFileField.getText(), Integer.parseInt(timeLimitField.getText()), structureTextArea);
+        
+        //Setup listener for state of sim
+        sim.addPropertyChangeListener(new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
+                simPropertyChanged(evt);
+            }
+        });
+        
+        //Run sim
+        sim.execute();
+        simButton.setEnabled(false);
+        resetButton.setEnabled(true);
     }//GEN-LAST:event_simButtonActionPerformed
 
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_resetButtonActionPerformed
 
+    private void simPropertyChanged(PropertyChangeEvent evt) {
+        if(evt.getPropertyName().equals("state") && evt.getNewValue().equals(SwingWorker.StateValue.DONE)) {
+            simButton.setEnabled(true);
+            resetButton.setEnabled(false);
+        } else if (evt.getPropertyName().equals("lastRunTestResults")) {
+            //Set new strand structure in text box
+            structureTextArea.setText(null);
+            TestResults results = (TestResults)evt.getNewValue();
+
+            //Format for output by putting strands on seperate lines
+            String[] strands = results.getSecondaryStructure().split("\\+");
+            for(String strand : strands)
+                structureTextArea.append(strand + "\n");
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */
-    public static void main2(String args[]) {
+    public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -252,6 +316,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel comboProbLabel;
+    private javax.swing.JTextField inputFileField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -259,16 +324,19 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField outputFileField;
     private javax.swing.JLabel randomWalkProbLabel;
     private javax.swing.JButton resetButton;
+    private javax.swing.JTextArea resultsArea;
     private javax.swing.JButton simButton;
     private javax.swing.JTextArea structureTextArea;
+    private javax.swing.JTextField timeLimitField;
     private javax.swing.JLabel totIterLabel;
     // End of variables declaration//GEN-END:variables
+    
+    private StickerModelExecutor sim;
 }
