@@ -60,7 +60,9 @@ public class HillClimber {
         long start = java.time.Instant.now().getEpochSecond();
         long time=0;
         //double annealingProbability = 0.2;
-        double annealingProbability = 0.8;
+        //double annealingProbability = 0.8;
+        double annealingProbability = 1/strands.size();
+        pcs.firePropertyChange("annealingProbability", 0.0, annealingProbability);
         double temperature = 1;
         double coolingRate = 0.05;
         double s;
@@ -117,7 +119,7 @@ public class HillClimber {
             double temp = Math.pow(Math.E, (-delta_s)/temperature);
             if (temp < annealingProbability) {
                 double oldProb = annealingProbability;
-                annealingProbability = temp;
+           //     annealingProbability = temp;
                 pcs.firePropertyChange("annealingProbability", oldProb, annealingProbability);
             }
         

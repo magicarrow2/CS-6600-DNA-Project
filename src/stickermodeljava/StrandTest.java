@@ -27,6 +27,7 @@ public class StrandTest {
     private final String home;
     private final String singleStrandTestFilename = "SST";
     private final String combinationTestFilename = "CT";
+    private double minFreeEnergy;  //This is a horrible cluge.  It is set when getSecondaryStructure is run.
     
     public StrandTest() {
         bin = System.getProperty("user.dir") + "/nupack3.0.4/bin";
@@ -34,17 +35,20 @@ public class StrandTest {
     }
     
     public TestResults runAllTests(List<DNAStrand> strands) throws IOException {
-        double overallNoncombiningProbability;
+//        double overallNoncombiningProbability;
+//        ArrayList<Double> straightnessProbability = new ArrayList<>();
         ArrayList<Double> straightnessProbability = new ArrayList<>();
         String secondaryStructure;
         
-        overallNoncombiningProbability = getCombinationProbability(strands);
-        secondaryStructure = getSecondaryStructure(strands);
-        for(DNAStrand strand : strands) {
-            straightnessProbability.add(getStraightnessProbability(strand));
-        }
         
-        TestResults results = new TestResults(overallNoncombiningProbability, straightnessProbability, secondaryStructure);
+//        overallNoncombiningProbability = getCombinationProbability(strands);
+        secondaryStructure = getSecondaryStructure(strands);
+//        for(DNAStrand strand : strands) {
+//            straightnessProbability.add(getStraightnessProbability(strand));
+//        }
+        
+//        TestResults results = new TestResults(overallNoncombiningProbability, straightnessProbability, secondaryStructure);
+        TestResults results = new TestResults(0.0, straightnessProbability, secondaryStructure, minFreeEnergy);
         return results;
     }
     
@@ -159,9 +163,15 @@ public class StrandTest {
         BufferedReader in = new BufferedReader(inStream);
         String structureString;
         try {
-            while(!in.readLine().startsWith("% %%%%%%%%"));  //Skip past header stuff
-            in.readLine(); 
+            //Skip header stuff
+            while(!in.readLine().startsWith("% %%%%%%%%"));
             in.readLine();
+            
+            //Get minimum free energy
+            BigDecimal dec = new BigDecimal(in.readLine());
+            minFreeEnergy = dec.doubleValue();
+            
+            //Get MFE structure
             structureString = in.readLine();
         } catch (NullPointerException e) { //Disjoint strands case (meaning algorithm succeeded)
             StringBuilder str = new StringBuilder();

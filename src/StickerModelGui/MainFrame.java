@@ -53,6 +53,8 @@ public class MainFrame extends javax.swing.JFrame {
         comboProbLabel = new javax.swing.JLabel();
         totIterLabel = new javax.swing.JLabel();
         randomWalkProbLabel = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        mfeLabel = new javax.swing.JLabel();
         simButton = new javax.swing.JButton();
         resetButton = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
@@ -73,7 +75,7 @@ public class MainFrame extends javax.swing.JFrame {
         structureTextArea.setRows(5);
         jScrollPane2.setViewportView(structureTextArea);
 
-        jLabel2.setText("Combination Structure");
+        jLabel2.setText("Minimum Free Energy (MFE) Structure");
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Stats"));
 
@@ -90,7 +92,12 @@ public class MainFrame extends javax.swing.JFrame {
         totIterLabel.setText("0");
 
         randomWalkProbLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        randomWalkProbLabel.setText("0.9");
+        randomWalkProbLabel.setText("0.0");
+
+        jLabel10.setText("Minimum Free Energy (MFE)");
+
+        mfeLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        mfeLabel.setText("0.0");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -102,9 +109,11 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(jLabel3)
                     .addComponent(jLabel4)
+                    .addComponent(jLabel10)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(12, 12, 12)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(mfeLabel)
                             .addComponent(randomWalkProbLabel)
                             .addComponent(totIterLabel)
                             .addComponent(comboProbLabel))))
@@ -124,7 +133,11 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(randomWalkProbLabel)
-                .addGap(0, 98, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(mfeLabel)
+                .addGap(0, 50, Short.MAX_VALUE))
         );
 
         simButton.setText("Run");
@@ -272,7 +285,9 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_simButtonActionPerformed
 
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
-        // TODO add your handling code here:
+        sim.cancel(true);
+        simButton.setEnabled(true);
+        resetButton.setEnabled(false);
     }//GEN-LAST:event_resetButtonActionPerformed
 
     private void simPropertyChanged(PropertyChangeEvent evt) {
@@ -291,6 +306,7 @@ public class MainFrame extends javax.swing.JFrame {
             
             //Update numeric fields
             //comboProbLabel.setText(Double.toString(results.getOverallNoncombiningProbability()));
+            mfeLabel.setText(Double.toString(results.getMFE()));
         } else if (evt.getPropertyName().equals("lastNumIterations")) {
             totIterLabel.setText(Integer.toString((int)evt.getNewValue()));
         } else if (evt.getPropertyName().equals("annealingProbability")) {
@@ -339,6 +355,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel comboProbLabel;
     private javax.swing.JTextField inputFileField;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -350,6 +367,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel mfeLabel;
     private javax.swing.JTextField outputFileField;
     private javax.swing.JLabel randomWalkProbLabel;
     private javax.swing.JButton resetButton;

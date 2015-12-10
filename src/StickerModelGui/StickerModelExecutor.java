@@ -58,10 +58,18 @@ public class StickerModelExecutor extends SwingWorker<String,String> implements 
             climber.addPropertyChangeListener(this);
             
             strands = climber.run(timeLimit, probabilityThreshold, strandLength);
+            
             //Write the results to a file
             FileWriter outFile;
             outFile = new FileWriter(outputFile);
             BufferedWriter out = new BufferedWriter(outFile);
+            out.write(sat.toString() + "\n");
+            out.write("Num variables " + sat.getNumUniqueVariables() + "\n");
+            out.write("Variables: \n");
+            set.forEach((var) -> {System.out.print(var + " ");});
+            System.out.print ("\n\n");
+            out.write("Number of iterations: " + climber.getLastNumIterations() + "\n");
+            out.write("Completion Time: " + climber.getLastRunTime() + " seconds \n");
             out.write("Percentage of defective nucleotides: " + (1-climber.getLastRunCombinationProbablility())*100 + "%\n");
             out.write("Strands:\n");
             for(DNAStrand strand : strands) {
@@ -75,6 +83,7 @@ public class StickerModelExecutor extends SwingWorker<String,String> implements 
             if(climber != null && strands != null) {
                 //Write the results to the screen
                 System.out.print("\nNumber of iterations: " + climber.getLastNumIterations() + "\n");
+                System.out.print("Completion Time: " + climber.getLastRunTime() + " seconds \n");
                 System.out.print("Percentage of defective nucleotides: " + (1-climber.getLastRunCombinationProbablility())*100 + "%\n");
                 System.out.print("Strands:\n");
                 for(DNAStrand strand : strands) {
