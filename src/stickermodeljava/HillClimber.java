@@ -43,7 +43,7 @@ public class HillClimber {
     }
     
     public ArrayList<DNAStrand> run(int timeLimitSeconds, double minNonComboProbability, int strandSize) throws IOException {
-        double NonComboProbability;
+        double nonDefectPercentage;
         //Create initial DNA strand list
         int number = sat.getNumUniqueVariables() * 2;  //Need a strand for true and false states of each variable.
         ArrayList<DNAStrand> strands = new ArrayList<>();
@@ -54,13 +54,15 @@ public class HillClimber {
         //Test list
         StrandTest tester = new StrandTest();
         lastRunTestResults = tester.runAllTests(strands);
-        NonComboProbability = lastRunTestResults.getOverallNoncombiningProbability();
+        nonDefectPercentage = lastRunTestResults.getOverallNoncombiningProbability();
         
         //Climb the hill with annealing
         long start = java.time.Instant.now().getEpochSecond();
         long time=0;
-        double annealingProbability = 0.2;
-        double temperature;
+        //double annealingProbability = 0.2;
+        double annealingProbability = 0.8;
+        double temperature = 1;
+        double coolingRate = 0.05;
         double s;
         double s_prime;
         double delta_s;
@@ -68,10 +70,11 @@ public class HillClimber {
         boolean timedOut = false;
         
         lastNumIterations = 1;
-        while((time < timeLimitSeconds || timeLimitSeconds < 0) && NonComboProbability < minNonComboProbability) {
+        while((time < timeLimitSeconds || timeLimitSeconds < 0) && nonDefectPercentage < minNonComboProbability) {
             //Figure out which strand is the most problematic
             String structure = lastRunTestResults.getSecondaryStructure();
             int index = findProblemStrand(structure);
+            if(index < 0) break;
             
             //Randomly (with decaying probability) replace a whole DNA strand with a 
             //  random strand or fix a part of a strand.  This is the annealing part.
@@ -82,34 +85,52 @@ public class HillClimber {
                 DNAStrand strand = strands.get(index);
                 int nucleotideNum = getDefectiveNucleotide(structure, index);
                 if (nucleotideNum > 0) strand.newNucleotide(nucleotideNum);
-                strands.set(index, strand);
+                //Ensure uniqueness
+                int pointer = getDuplicateIndex(strands);
+                while(pointer >= 0) {
+                    strands.set(pointer, new DNAStrand(strandSize));
+                    pointer = getDuplicateIndex(strands);
+                }
             }
             
             //Test again and fix new temperature and annealing probability
             TestResults oldTest = lastRunTestResults;
             lastRunTestResults = tester.runAllTests(strands);
             pcs.firePropertyChange("lastRunTestResults", oldTest, lastRunTestResults);
-            s = NonComboProbability;
-            NonComboProbability = lastRunTestResults.getOverallNoncombiningProbability();
-            s_prime = NonComboProbability;
+            //s = nonDefectPercentage;
+            //NonComboProbability = lastRunTestResults.getOverallNoncombiningProbability();
+            //s_prime = nonDefectPercentage;
+            
+            int defects = findNumDefects(structure);
+            structure = lastRunTestResults.getSecondaryStructure();
+            
+            
+            s = 1-((double)defects/(strandSize*strands.size()));
+            defects = findNumDefects(structure);
+            s_prime = 1-((double)defects/(strandSize*strands.size()));
+            double oldPercentage = nonDefectPercentage;
+            nonDefectPercentage = s_prime;
+            pcs.firePropertyChange("nonDefectPercentage", oldPercentage, nonDefectPercentage);
             delta_s = s - s_prime;
-            temperature = (-delta_s)/log(annealingProbability);
+            //temperature = (delta_s)/log(annealingProbability);
+            temperature *= 1-coolingRate;
             double temp = Math.pow(Math.E, (-delta_s)/temperature);
-            if (temp < annealingProbability)
+            if (temp < annealingProbability) {
+                double oldProb = annealingProbability;
                 annealingProbability = temp;
-            
-            //Output results to user
-            
+                pcs.firePropertyChange("annealingProbability", oldProb, annealingProbability);
+            }
         
             //Exit when timeLimitSeconds is hit or minNonComboProbability is hit
             time = java.time.Instant.now().getEpochSecond() - start;
             if(time > timeLimitSeconds && timeLimitSeconds > 0) timedOut = true;
             lastNumIterations++;
+            pcs.firePropertyChange("lastNumIterations",lastNumIterations-1,lastNumIterations);
         }
         
         //Record run stats
         lastRunTime = (int)time;
-        lastRunCombinationProbability = NonComboProbability;
+        lastRunCombinationProbability = nonDefectPercentage;
         if(timedOut){
             lastRunExitCriteria = "Run timed out.";
         } else {
@@ -182,5 +203,40 @@ public class HillClimber {
         
         //Get a random index from the list and return it.
         return nucleotideIndicies.get(random.nextInt(nucleotideIndicies.size()));
+    }
+
+    /**Checks that the list of strands contains no duplicate strands.
+     * 
+     * @param strands List of strands to be checked for uniqueness.
+     * @return Unique or not unique.
+     */
+    private int getDuplicateIndex(ArrayList<DNAStrand> strands) {
+        int duplicateStrand = -1;
+        
+        for(int i=0; i<strands.size()-1; i++) {
+            for(int j=i+1; j<strands.size(); j++) {
+                if(strands.get(i).toString().equals(strands.get(j).toString()))
+                    duplicateStrand = i;
+            }
+        }
+        
+        return duplicateStrand;
+    }
+
+    private int findNumDefects(String structure) {
+        String[] strands = structure.split("\\+");
+        int bondCount = 0;
+        for(int i=0; i<strands.length; i++) {
+            int count = 0;
+            for(int j=0; j<strands[i].length(); j++) {
+                char temp = strands[i].charAt(j);
+                if(temp == '(' || temp == ')') count++;
+            }
+            bondCount += count;
+//            if (count > bondCount) {
+//                bondCount = count;
+//            }
+        }
+        return bondCount;
     }
 }

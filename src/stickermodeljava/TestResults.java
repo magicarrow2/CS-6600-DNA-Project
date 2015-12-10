@@ -15,9 +15,9 @@ import java.util.logging.Logger;
  * @author Jared
  */
 public class TestResults {
-    private double overallNoncombiningProbability;
-    private ArrayList<Double> straightnessProbability;
-    private String secondaryStructure;
+    private final double overallNoncombiningProbability;
+    private final ArrayList<Double> straightnessProbability;
+    private final String secondaryStructure;
     //private HashMap<Integer,Integer[]> combinations;
 
     public TestResults(double overallNoncombiningProbability, ArrayList<Double> straightnessProbability, String secondaryStructure) {

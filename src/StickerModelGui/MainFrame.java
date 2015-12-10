@@ -30,8 +30,6 @@ public class MainFrame extends javax.swing.JFrame {
         System.setOut(out);
         System.setErr(out);
         
-        
-        
         //Initialize button states
         resetButton.setEnabled(false);
     }
@@ -66,6 +64,8 @@ public class MainFrame extends javax.swing.JFrame {
         resultsArea = new javax.swing.JTextArea();
         jLabel8 = new javax.swing.JLabel();
         timeLimitField = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        strandLengthField = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -77,7 +77,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Stats"));
 
-        jLabel1.setText("Combination Probability");
+        jLabel1.setText("Percent Non-combining");
 
         jLabel3.setText("Total Iterations");
 
@@ -90,7 +90,7 @@ public class MainFrame extends javax.swing.JFrame {
         totIterLabel.setText("0");
 
         randomWalkProbLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        randomWalkProbLabel.setText("0.2");
+        randomWalkProbLabel.setText("0.9");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -159,6 +159,11 @@ public class MainFrame extends javax.swing.JFrame {
 
         timeLimitField.setText("10");
 
+        jLabel9.setText("Strand Length");
+
+        strandLengthField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(java.text.NumberFormat.getIntegerInstance())));
+        strandLengthField.setText("10");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -191,9 +196,13 @@ public class MainFrame extends javax.swing.JFrame {
                                     .addComponent(inputFileField)
                                     .addComponent(outputFileField, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel8)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel8)
+                                    .addComponent(jLabel9))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(timeLimitField, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(timeLimitField, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
+                                    .addComponent(strandLengthField))))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -209,7 +218,9 @@ public class MainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(outputFileField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(outputFileField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9)
+                    .addComponent(strandLengthField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -244,7 +255,8 @@ public class MainFrame extends javax.swing.JFrame {
         resultsArea.setText(null);
         
         //Create new sim
-        sim = new StickerModelExecutor(inputFileField.getText(), outputFileField.getText(), Integer.parseInt(timeLimitField.getText()), structureTextArea);
+        sim = new StickerModelExecutor(inputFileField.getText(), outputFileField.getText(),
+                Integer.parseInt(timeLimitField.getText()), Integer.parseInt(strandLengthField.getText()));
         
         //Setup listener for state of sim
         sim.addPropertyChangeListener(new PropertyChangeListener() {
@@ -272,10 +284,19 @@ public class MainFrame extends javax.swing.JFrame {
             structureTextArea.setText(null);
             TestResults results = (TestResults)evt.getNewValue();
 
-            //Format for output by putting strands on seperate lines
+            //Format strands for output by putting strands on seperate lines
             String[] strands = results.getSecondaryStructure().split("\\+");
             for(String strand : strands)
                 structureTextArea.append(strand + "\n");
+            
+            //Update numeric fields
+            //comboProbLabel.setText(Double.toString(results.getOverallNoncombiningProbability()));
+        } else if (evt.getPropertyName().equals("lastNumIterations")) {
+            totIterLabel.setText(Integer.toString((int)evt.getNewValue()));
+        } else if (evt.getPropertyName().equals("annealingProbability")) {
+            randomWalkProbLabel.setText(Double.toString((double)evt.getNewValue()));
+        } else if (evt.getPropertyName().equals("nonDefectPercentage")) {
+            comboProbLabel.setText(Double.toString((double)evt.getNewValue()));
         }
     }
     
@@ -325,6 +346,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -333,6 +355,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton resetButton;
     private javax.swing.JTextArea resultsArea;
     private javax.swing.JButton simButton;
+    private javax.swing.JFormattedTextField strandLengthField;
     private javax.swing.JTextArea structureTextArea;
     private javax.swing.JTextField timeLimitField;
     private javax.swing.JLabel totIterLabel;

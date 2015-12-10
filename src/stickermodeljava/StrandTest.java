@@ -143,7 +143,7 @@ public class StrandTest {
         
         //Find the secondary structure
         writeInputFile(strands, filename);
-        ProcessBuilder proc = new ProcessBuilder("./mfe", "-pseudo", "-material", "dna", "-multi", filename);
+        ProcessBuilder proc = new ProcessBuilder("./mfe", "-material", "dna", "-multi", filename);
         proc.environment().put("NUPACKHOME", home);
         proc.directory(new File(bin));
         Process p = proc.start();
@@ -157,11 +157,23 @@ public class StrandTest {
         //Parse the secondary structure information from the file
         FileReader inStream = new FileReader(bin + "/" + filename + ".mfe");
         BufferedReader in = new BufferedReader(inStream);
-        while(!in.readLine().startsWith("% %%%%%%%%"));  //Skip past header stuff
-        in.readLine();
-        in.readLine();
-        String structureString = in.readLine();
-        
+        String structureString;
+        try {
+            while(!in.readLine().startsWith("% %%%%%%%%"));  //Skip past header stuff
+            in.readLine(); 
+            in.readLine();
+            structureString = in.readLine();
+        } catch (NullPointerException e) { //Disjoint strands case (meaning algorithm succeeded)
+            StringBuilder str = new StringBuilder();
+                for (int i=0; i<strands.size(); i++) {
+                    for (int j=0; j<strands.get(0).size(); j++) {
+                        str.append(".");
+                    }
+                    str.append("+");
+                }
+                str.deleteCharAt(str.length()-1);  //Delete extraneous "+" at end of structure
+                structureString = str.toString();
+        }
         return structureString;
     }
     
@@ -175,8 +187,8 @@ public class StrandTest {
             
             //Write test file
             out.write(strands.size() + "\n"); //Number of strands
-            for(DNAStrand strand : strands) { //Strands themselves
-                out.write(strand.toString() + "\n");
+            for(int i=strands.size()-1; i>=0; i--) { //Strands themselves
+                out.write(strands.get(i).toString() + "\n");
             }
             
             for(int i=strands.size(); i>0; i--) {

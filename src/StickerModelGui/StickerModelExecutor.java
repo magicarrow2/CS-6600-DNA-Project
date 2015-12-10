@@ -13,14 +13,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
-import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 import stickermodeljava.DNAStrand;
 import stickermodeljava.HillClimber;
 import stickermodeljava.SATHandler;
 import stickermodeljava.Sat;
-import stickermodeljava.TestResults;
 
 /**
  *
@@ -30,19 +27,20 @@ public class StickerModelExecutor extends SwingWorker<String,String> implements 
     private final String inputFile;
     private final String outputFile;
     private final int timeLimit;
-    private final double probabilityThreshold = 0.85;
-    private final int strandLength = 5;
-    private final JTextArea textbox;
+    private final double probabilityThreshold = 0.9999;
+    private final int strandLength;
 
-    public StickerModelExecutor(String inputFile, String outputFile, int timeLimit, JTextArea outputTextbox) {
+    public StickerModelExecutor(String inputFile, String outputFile, int timeLimit, int strandSize) {
         this.inputFile = inputFile;
         this.outputFile = outputFile;
         this.timeLimit = timeLimit;
-        this.textbox = outputTextbox;
+        this.strandLength = strandSize;
     }
     
     @Override
     protected String doInBackground() throws Exception {
+        HillClimber climber = null;
+        ArrayList<DNAStrand> strands = null;
         try {
             //Get 3-SAT equation from input file
             Sat sat = SATHandler.get3SatFromInputFile(inputFile);
@@ -56,34 +54,35 @@ public class StickerModelExecutor extends SwingWorker<String,String> implements 
             System.out.print ("\n\n");
 
             //Run HillClimber to get a set of acceptable strands
-            HillClimber climber = new HillClimber(sat);
+            climber = new HillClimber(sat);
             climber.addPropertyChangeListener(this);
-            ArrayList<DNAStrand> strands;
+            
             strands = climber.run(timeLimit, probabilityThreshold, strandLength);
-
             //Write the results to a file
             FileWriter outFile;
             outFile = new FileWriter(outputFile);
             BufferedWriter out = new BufferedWriter(outFile);
-            out.write("Probability of straightness and not combining: " + climber.getLastRunCombinationProbablility() + "\n");
+            out.write("Percentage of defective nucleotides: " + (1-climber.getLastRunCombinationProbablility())*100 + "%\n");
             out.write("Strands:\n");
             for(DNAStrand strand : strands) {
                 out.write(strand.toString() + "\n");
             }
             out.close();
-            
-            //Write the results to the screen
-            System.out.print("\nNumber of iterations: " + climber.getLastNumIterations() + "\n");
-            System.out.print("Probability of straightness and not combining: " + climber.getLastRunCombinationProbablility() + "\n");
-            System.out.print("Strands:\n");
-            for(DNAStrand strand : strands) {
-                System.out.print(strand.toString() + "\n");
-            }
         } catch (IOException e) {
             System.out.print(e.getMessage());
-            return "IOError";
+            return "IOError\n";
+        } finally {
+            if(climber != null && strands != null) {
+                //Write the results to the screen
+                System.out.print("\nNumber of iterations: " + climber.getLastNumIterations() + "\n");
+                System.out.print("Percentage of defective nucleotides: " + (1-climber.getLastRunCombinationProbablility())*100 + "%\n");
+                System.out.print("Strands:\n");
+                for(DNAStrand strand : strands) {
+                    System.out.print(strand.toString() + "\n");
+                }
+            }
         }
-        return "Done";
+        return " ";
     }
     
     @Override
@@ -94,14 +93,6 @@ public class StickerModelExecutor extends SwingWorker<String,String> implements 
             System.out.print(e.getMessage());
         }
     }
-    
-//    @Override
-//    protected void process(List<String> chunks) {
-//        textbox.setText(null);
-//        for (String chunk : chunks) {
-//            textbox.append(chunk);
-//        }
-//    }
 
     /**This callback function handles the event when the hill climbing algorithm
      * runs a new iteration.
@@ -112,16 +103,5 @@ public class StickerModelExecutor extends SwingWorker<String,String> implements 
     public void propertyChange(PropertyChangeEvent evt) {
         PropertyChangeSupport pcs = this.getPropertyChangeSupport();
         pcs.firePropertyChange(evt);
-        
-//        //Set new strand structure in text box
-//        if(evt.getPropertyName().equals("lastRunTestResults")) {
-//            textbox.setText(null);
-//            TestResults results = (TestResults)evt.getNewValue();
-//            
-//            //Format for output by putting strands on seperate lines
-//            String[] strands = results.getSecondaryStructure().split("\\+");
-//            for(String strand : strands)
-//                textbox.append(strand + "\n");
-//        }
     }
 }
