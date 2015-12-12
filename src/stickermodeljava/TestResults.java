@@ -14,14 +14,14 @@ import java.util.ArrayList;
  */
 public class TestResults {
     private final double overallNoncombiningProbability;
-    private final ArrayList<Double> straightnessProbability;
+    //private final ArrayList<Double> straightnessProbability;
     private final String secondaryStructure;
     private final double mfe;
     //private HashMap<Integer,Integer[]> combinations;
 
-    public TestResults(double overallNoncombiningProbability, ArrayList<Double> straightnessProbability, String secondaryStructure, double mfe) {
+    public TestResults(double overallNoncombiningProbability, String secondaryStructure, double mfe) {
         this.overallNoncombiningProbability = overallNoncombiningProbability;
-        this.straightnessProbability = straightnessProbability;
+        //this.straightnessProbability = straightnessProbability;
         this.secondaryStructure = secondaryStructure;
         this.mfe = mfe;
         //this.combinations = combinations;
@@ -31,9 +31,9 @@ public class TestResults {
         return overallNoncombiningProbability;
     }
 
-    public ArrayList<Double> getStraightnessProbability() {
-        return straightnessProbability;
-    }
+//    public ArrayList<Double> getStraightnessProbability() {
+//        return straightnessProbability;
+//    }
 
     public String getSecondaryStructure() {
         return secondaryStructure;
@@ -45,4 +45,9 @@ public class TestResults {
 //    public HashMap<Integer, Integer[]> getCombinations() {
 //        return combinations;
 //    }
+    
+    @Override
+    public TestResults clone() {
+        return new TestResults(overallNoncombiningProbability, secondaryStructure, mfe);
+    }
 }

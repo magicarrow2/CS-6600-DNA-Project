@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 public class StrandTest {
     private final String bin;
     private final String home;
-    private final String singleStrandTestFilename = "SST";
+//    private final String singleStrandTestFilename = "SST";
     private final String combinationTestFilename = "CT";
     private double minFreeEnergy;  //This is a horrible cluge.  It is set when getSecondaryStructure is run.
     
@@ -37,7 +37,6 @@ public class StrandTest {
     public TestResults runAllTests(List<DNAStrand> strands) throws IOException {
 //        double overallNoncombiningProbability;
 //        ArrayList<Double> straightnessProbability = new ArrayList<>();
-        ArrayList<Double> straightnessProbability = new ArrayList<>();
         String secondaryStructure;
         
         
@@ -48,7 +47,7 @@ public class StrandTest {
 //        }
         
 //        TestResults results = new TestResults(overallNoncombiningProbability, straightnessProbability, secondaryStructure);
-        TestResults results = new TestResults(0.0, straightnessProbability, secondaryStructure, minFreeEnergy);
+        TestResults results = new TestResults(0.0, secondaryStructure, minFreeEnergy);
         return results;
     }
     
@@ -58,7 +57,7 @@ public class StrandTest {
      * @return
      * @throws IOException 
      */
-    public double getStraightnessProbability(DNAStrand strand) throws IOException {
+/*    public double getStraightnessProbability(DNAStrand strand) throws IOException {
         //Put input strand in a file
         BufferedWriter out = null;
         try
@@ -86,21 +85,21 @@ public class StrandTest {
         //Get the probability
         return runProbabilityTest(singleStrandTestFilename);
     }
-    
+*/    
     /**Determines the probability of strands combining with each other.
      * 
      * @param strands
      * @return
      * @throws IOException 
      */
-    public double getCombinationProbability(List<DNAStrand> strands) throws IOException {
+/*    public double getCombinationProbability(List<DNAStrand> strands) throws IOException {
         //Write to file
         writeInputFile(strands, combinationTestFilename);
         
         //Run probability test and return results
         return runProbabilityTest(combinationTestFilename);
     }
-    
+*/    
     /**Takes a ".in" test file and executes the "prob" executable from the NuPack3.0.4 package against it.
      * Uses the "-multi" and "-material dna" options in the call.
      * 
@@ -108,7 +107,7 @@ public class StrandTest {
      * @return Probability (0.0000 to 1.0000) of strands creating the structure in question.
      * @throws IOException 
      */
-    private double runProbabilityTest(String inputFilenameStem) throws IOException {
+/*    private double runProbabilityTest(String inputFilenameStem) throws IOException {
         //Process the strand
         File tempFile = new File(inputFilenameStem + ".txt");
         tempFile.createNewFile();
@@ -141,7 +140,7 @@ public class StrandTest {
         
         return probability;
     }
-    
+*/    
     public String getSecondaryStructure(List<DNAStrand> strands) throws IOException {
         String filename = combinationTestFilename + "mfe";
         

@@ -18,20 +18,20 @@ import java.util.Random;
  */
 public class HillClimber {
     private final Sat sat;
-    private String lastRunExitCriteria;
-    private int lastRunTime;
-    private double lastRunCombinationProbability;
-    private TestResults lastRunTestResults;
-    private int lastNumIterations;
+    private String runExitCriteria;  //Contains exit criteria for the most recent run
+    private int runTime;    //Contains run time of most recent run
+    private double nonDefectPercentage;   //Contains non-combination probability of most recent run iteration
+    private TestResults runTestResults; //Contains test results of most recent run iteration
+    private int numIterations;  //Contains number of iterations in the last run
     private final Random random = new Random(System.currentTimeMillis());
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     public HillClimber(Sat sat){
         this.sat = sat;
-        lastRunExitCriteria = "Never been run.";
-        lastRunTime = -1;
-        lastRunCombinationProbability = -1.0;
-        lastNumIterations = 0;
+        runExitCriteria = "Never been run.";
+        runTime = -1;
+        nonDefectPercentage = -1.0;
+        numIterations = 0;
     }
     
     public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -47,14 +47,17 @@ public class HillClimber {
         //Create initial DNA strand list
         int number = sat.getNumUniqueVariables() * 2;  //Need a strand for true and false states of each variable.
         ArrayList<DNAStrand> strands = new ArrayList<>();
+        ArrayList<DNAStrand> oldStrands;
         for(int i = 0; i<number; i++){
             strands.add(new DNAStrand(strandSize));
         }
+        oldStrands = cloneList(strands);
         
         //Test list
         StrandTest tester = new StrandTest();
-        lastRunTestResults = tester.runAllTests(strands);
-        nonDefectPercentage = lastRunTestResults.getOverallNoncombiningProbability();
+        runTestResults = tester.runAllTests(strands);
+        TestResults oldTestResults = runTestResults.clone();
+        nonDefectPercentage = runTestResults.getOverallNoncombiningProbability();
         
         //Climb the hill with annealing
         long start = java.time.Instant.now().getEpochSecond();
@@ -71,10 +74,10 @@ public class HillClimber {
         boolean useNewStrand;
         boolean timedOut = false;
         
-        lastNumIterations = 1;
+        numIterations = 1;
         while((time < timeLimitSeconds || timeLimitSeconds < 0) && nonDefectPercentage < minNonComboProbability) {
             //Figure out which strand is the most problematic
-            String structure = lastRunTestResults.getSecondaryStructure();
+            String structure = runTestResults.getSecondaryStructure();
             int index = findProblemStrand(structure);
             if(index < 0) break;
             
@@ -96,15 +99,13 @@ public class HillClimber {
             }
             
             //Test again and fix new temperature and annealing probability
-            TestResults oldTest = lastRunTestResults;
-            lastRunTestResults = tester.runAllTests(strands);
-            pcs.firePropertyChange("lastRunTestResults", oldTest, lastRunTestResults);
-            //s = nonDefectPercentage;
-            //NonComboProbability = lastRunTestResults.getOverallNoncombiningProbability();
-            //s_prime = nonDefectPercentage;
+            //TODO: Fit this into new algorithm
+            TestResults oldTest = runTestResults;
+            runTestResults = tester.runAllTests(strands);
+            pcs.firePropertyChange("lastRunTestResults", oldTest, runTestResults);
             
             int defects = findNumDefects(structure);
-            structure = lastRunTestResults.getSecondaryStructure();
+            structure = runTestResults.getSecondaryStructure();
             
             
             s = 1-((double)defects/(strandSize*strands.size()));
@@ -113,6 +114,7 @@ public class HillClimber {
             double oldPercentage = nonDefectPercentage;
             nonDefectPercentage = s_prime;
             pcs.firePropertyChange("nonDefectPercentage", oldPercentage, nonDefectPercentage);
+            
             delta_s = s - s_prime;
             //temperature = (delta_s)/log(annealingProbability);
             temperature *= 1-coolingRate;
@@ -126,39 +128,43 @@ public class HillClimber {
             //Exit when timeLimitSeconds is hit or minNonComboProbability is hit
             time = java.time.Instant.now().getEpochSecond() - start;
             if(time > timeLimitSeconds && timeLimitSeconds > 0) timedOut = true;
-            lastNumIterations++;
-            pcs.firePropertyChange("lastNumIterations",lastNumIterations-1,lastNumIterations);
+            numIterations++;
+            pcs.firePropertyChange("lastNumIterations",numIterations-1,numIterations);
+            
+            //Save info from last iteration
+            oldStrands = cloneList(strands);
+            oldTestResults = runTestResults;
         }
         
         //Record run stats
-        lastRunTime = (int)time;
-        lastRunCombinationProbability = nonDefectPercentage;
+        runTime = (int)time;
+        this.nonDefectPercentage = nonDefectPercentage;
         if(timedOut){
-            lastRunExitCriteria = "Run timed out.";
+            runExitCriteria = "Run timed out.";
         } else {
-            lastRunExitCriteria = "Threshold combination probability met.";
+            runExitCriteria = "Threshold combination probability met.";
         }
         return strands;
     }
     
     public TestResults getLastRunTestResults() {
-        return lastRunTestResults;
+        return runTestResults;
     }
     
     public int getLastRunTime() {
-        return lastRunTime;
+        return runTime;
     }
     
     public double getLastRunCombinationProbablility() {
-        return lastRunCombinationProbability;
+        return nonDefectPercentage;
     }
     
     public String getLastRunExitCriteria() {
-        return lastRunExitCriteria;
+        return runExitCriteria;
     }
 
     public int getLastNumIterations() {
-        return lastNumIterations;
+        return numIterations;
     }
     
     /**Parses the dnaStrands and finds the index of the strand with the most combinations
@@ -240,5 +246,13 @@ public class HillClimber {
 //            }
         }
         return bondCount;
+    }
+    
+    private ArrayList<DNAStrand> cloneList(ArrayList<DNAStrand> list) {
+        ArrayList<DNAStrand> copy = new ArrayList<>();
+        for (DNAStrand listItem : list) {
+            copy.add(listItem.clone());
+        }
+        return copy;
     }
 }
