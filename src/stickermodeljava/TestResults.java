@@ -5,7 +5,6 @@
  */
 package stickermodeljava;
 
-import java.util.ArrayList;
 
 /**This class is just a data structure container that holds all of the results
  * from the tests on a solution done with the NuPack software.
@@ -13,27 +12,13 @@ import java.util.ArrayList;
  * @author Jared
  */
 public class TestResults {
-    private final double overallNoncombiningProbability;
-    //private final ArrayList<Double> straightnessProbability;
     private final String secondaryStructure;
     private final double mfe;
-    //private HashMap<Integer,Integer[]> combinations;
 
-    public TestResults(double overallNoncombiningProbability, String secondaryStructure, double mfe) {
-        this.overallNoncombiningProbability = overallNoncombiningProbability;
-        //this.straightnessProbability = straightnessProbability;
+    public TestResults(String secondaryStructure, double mfe) {
         this.secondaryStructure = secondaryStructure;
         this.mfe = mfe;
-        //this.combinations = combinations;
     }
-    
-    public double getOverallNoncombiningProbability() {
-        return overallNoncombiningProbability;
-    }
-
-//    public ArrayList<Double> getStraightnessProbability() {
-//        return straightnessProbability;
-//    }
 
     public String getSecondaryStructure() {
         return secondaryStructure;
@@ -42,12 +27,9 @@ public class TestResults {
     public double getMFE() {
         return mfe;
     }
-//    public HashMap<Integer, Integer[]> getCombinations() {
-//        return combinations;
-//    }
     
     @Override
     public TestResults clone() {
-        return new TestResults(overallNoncombiningProbability, secondaryStructure, mfe);
+        return new TestResults(secondaryStructure, mfe);
     }
 }

@@ -18,6 +18,7 @@ import stickermodeljava.DNAStrand;
 import stickermodeljava.HillClimber;
 import stickermodeljava.SATHandler;
 import stickermodeljava.Sat;
+import stickermodeljava.AlgorithmType;
 
 /**
  *
@@ -29,12 +30,14 @@ public class StickerModelExecutor extends SwingWorker<String,String> implements 
     private final int timeLimit;
     private final double probabilityThreshold = 0.9999;
     private final int strandLength;
+    private final AlgorithmType algorithmType;
 
-    public StickerModelExecutor(String inputFile, String outputFile, int timeLimit, int strandSize) {
+    public StickerModelExecutor(String inputFile, String outputFile, int timeLimit, int strandSize, AlgorithmType algorithmType) {
         this.inputFile = inputFile;
         this.outputFile = outputFile;
         this.timeLimit = timeLimit;
         this.strandLength = strandSize;
+        this.algorithmType = algorithmType;
     }
     
     @Override
@@ -57,7 +60,7 @@ public class StickerModelExecutor extends SwingWorker<String,String> implements 
             climber = new HillClimber(sat);
             climber.addPropertyChangeListener(this);
             
-            strands = climber.run(timeLimit, probabilityThreshold, strandLength);
+            strands = climber.run(timeLimit, probabilityThreshold, strandLength, algorithmType);
             
             //Write the results to a file
             FileWriter outFile;

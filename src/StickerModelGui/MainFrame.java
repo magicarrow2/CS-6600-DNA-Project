@@ -8,9 +8,8 @@ package StickerModelGui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.PrintStream;
-import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
-import stickermodeljava.StickerModelJava;
+import stickermodeljava.AlgorithmType;
 import stickermodeljava.TestResults;
 
 /**
@@ -43,6 +42,7 @@ public class MainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jScrollPane2 = new javax.swing.JScrollPane();
         structureTextArea = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
@@ -50,11 +50,13 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        comboProbLabel = new javax.swing.JLabel();
+        percentDefectsLabel = new javax.swing.JLabel();
         totIterLabel = new javax.swing.JLabel();
-        randomWalkProbLabel = new javax.swing.JLabel();
+        temperatureLabel = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         mfeLabel = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        badProbLabel = new javax.swing.JLabel();
         simButton = new javax.swing.JButton();
         resetButton = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
@@ -68,8 +70,12 @@ public class MainFrame extends javax.swing.JFrame {
         timeLimitField = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         strandLengthField = new javax.swing.JFormattedTextField();
+        relaxedButton = new javax.swing.JRadioButton();
+        vanillaButton = new javax.swing.JRadioButton();
+        annealingButton = new javax.swing.JRadioButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("DNA Compiler");
 
         structureTextArea.setColumns(20);
         structureTextArea.setRows(5);
@@ -79,25 +85,30 @@ public class MainFrame extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Stats"));
 
-        jLabel1.setText("Percent Non-combining");
+        jLabel1.setText("Percent Defect");
 
         jLabel3.setText("Total Iterations");
 
-        jLabel4.setText("Random Walk Probability");
+        jLabel4.setText("Temperature");
 
-        comboProbLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        comboProbLabel.setText("0.0");
+        percentDefectsLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        percentDefectsLabel.setText("0.0");
 
         totIterLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         totIterLabel.setText("0");
 
-        randomWalkProbLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        randomWalkProbLabel.setText("0.0");
+        temperatureLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        temperatureLabel.setText("0.0");
 
         jLabel10.setText("Minimum Free Energy (MFE)");
 
         mfeLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         mfeLabel.setText("0.0");
+
+        jLabel11.setText("Bad Acceptance Probability");
+
+        badProbLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        badProbLabel.setText("0.9");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -110,13 +121,15 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(jLabel3)
                     .addComponent(jLabel4)
                     .addComponent(jLabel10)
+                    .addComponent(jLabel11)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(12, 12, 12)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(badProbLabel)
                             .addComponent(mfeLabel)
-                            .addComponent(randomWalkProbLabel)
+                            .addComponent(temperatureLabel)
                             .addComponent(totIterLabel)
-                            .addComponent(comboProbLabel))))
+                            .addComponent(percentDefectsLabel))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -124,7 +137,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(comboProbLabel)
+                .addComponent(percentDefectsLabel)
                 .addGap(22, 22, 22)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -132,12 +145,16 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(23, 23, 23)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(randomWalkProbLabel)
+                .addComponent(temperatureLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(mfeLabel)
-                .addGap(0, 176, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(badProbLabel)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         simButton.setText("Run");
@@ -159,11 +176,6 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel6.setText("Output File");
 
         inputFileField.setText("bigTest.txt");
-        inputFileField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                inputFileFieldActionPerformed(evt);
-            }
-        });
 
         outputFileField.setText("testOutput.txt");
 
@@ -181,6 +193,16 @@ public class MainFrame extends javax.swing.JFrame {
 
         strandLengthField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(java.text.NumberFormat.getIntegerInstance())));
         strandLengthField.setText("15");
+
+        buttonGroup1.add(relaxedButton);
+        relaxedButton.setSelected(true);
+        relaxedButton.setText("Relaxed Greedy");
+
+        buttonGroup1.add(vanillaButton);
+        vanillaButton.setText("Vanilla Hill-Climber");
+
+        buttonGroup1.add(annealingButton);
+        annealingButton.setText("Simulated Annealing");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -221,7 +243,13 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(timeLimitField, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
-                                    .addComponent(strandLengthField))))
+                                    .addComponent(strandLengthField)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(555, 555, 555)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(vanillaButton)
+                                    .addComponent(relaxedButton)
+                                    .addComponent(annealingButton))))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -242,13 +270,10 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(strandLengthField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel7)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(98, 98, 98)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(simButton)
@@ -256,7 +281,15 @@ public class MainFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(relaxedButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(vanillaButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(annealingButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -264,23 +297,29 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void simButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simButtonActionPerformed
-        //Start the sim
-//        String[] args= {inputFileField.getText(), outputFileField.getText(), timeLimitField.getText()};
-//        new Thread(new Runnable() {
-//            public void run() {
-//                StickerModelJava.main(args);
-//            }
-//        }).start();
-
         //Clear console output
         resultsArea.setText(null);
         
+        //Get selected algorithm type
+        AlgorithmType algorithmType;
+        if(relaxedButton.isSelected()) {
+            algorithmType = AlgorithmType.Relaxed;
+        } else if (vanillaButton.isSelected()) {
+            algorithmType = AlgorithmType.Vanilla;
+        } else if (annealingButton.isSelected()) {
+            algorithmType = AlgorithmType.Annealing;
+        } else { //Nothing selected
+            resultsArea.append("No algorithm selected.  Please make a selection and restart.\n");
+            return;
+        }
+        
         //Create new sim
         sim = new StickerModelExecutor(inputFileField.getText(), outputFileField.getText(),
-                Integer.parseInt(timeLimitField.getText()), Integer.parseInt(strandLengthField.getText()));
+                Integer.parseInt(timeLimitField.getText()), Integer.parseInt(strandLengthField.getText()), algorithmType);
         
         //Setup listener for state of sim
         sim.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 simPropertyChanged(evt);
             }
@@ -297,10 +336,6 @@ public class MainFrame extends javax.swing.JFrame {
         simButton.setEnabled(true);
         resetButton.setEnabled(false);
     }//GEN-LAST:event_resetButtonActionPerformed
-
-    private void inputFileFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputFileFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_inputFileFieldActionPerformed
 
     private void simPropertyChanged(PropertyChangeEvent evt) {
         if(evt.getPropertyName().equals("state") && evt.getNewValue().equals(SwingWorker.StateValue.DONE)) {
@@ -321,10 +356,12 @@ public class MainFrame extends javax.swing.JFrame {
             mfeLabel.setText(Double.toString(results.getMFE()));
         } else if (evt.getPropertyName().equals("lastNumIterations")) {
             totIterLabel.setText(Integer.toString((int)evt.getNewValue()));
-        } else if (evt.getPropertyName().equals("annealingProbability")) {
-            randomWalkProbLabel.setText(Double.toString((double)evt.getNewValue()));
+        } else if (evt.getPropertyName().equals("temperature")) {
+            temperatureLabel.setText(Double.toString((double)evt.getNewValue()));
         } else if (evt.getPropertyName().equals("nonDefectPercentage")) {
-            comboProbLabel.setText(Double.toString((double)evt.getNewValue()));
+            percentDefectsLabel.setText(Double.toString((double)evt.getNewValue()));
+        } else if (evt.getPropertyName().equals("acceptBadProb")) {
+            badProbLabel.setText(Double.toString((double)evt.getNewValue()));
         }
     }
     
@@ -364,10 +401,13 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel comboProbLabel;
+    private javax.swing.JRadioButton annealingButton;
+    private javax.swing.JLabel badProbLabel;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JTextField inputFileField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -381,14 +421,17 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel mfeLabel;
     private javax.swing.JTextField outputFileField;
-    private javax.swing.JLabel randomWalkProbLabel;
+    private javax.swing.JLabel percentDefectsLabel;
+    private javax.swing.JRadioButton relaxedButton;
     private javax.swing.JButton resetButton;
     private javax.swing.JTextArea resultsArea;
     private javax.swing.JButton simButton;
     private javax.swing.JFormattedTextField strandLengthField;
     private javax.swing.JTextArea structureTextArea;
+    private javax.swing.JLabel temperatureLabel;
     private javax.swing.JTextField timeLimitField;
     private javax.swing.JLabel totIterLabel;
+    private javax.swing.JRadioButton vanillaButton;
     // End of variables declaration//GEN-END:variables
     
     private StickerModelExecutor sim;

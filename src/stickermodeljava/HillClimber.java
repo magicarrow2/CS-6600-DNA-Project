@@ -18,9 +18,9 @@ import java.util.Random;
  */
 public class HillClimber {
     private final Sat sat;
-    private String runExitCriteria;  //Contains exit criteria for the most recent run
+    private boolean lastRunTimedOut;  //Contains exit criteria for the most recent run
     private int runTime;    //Contains run time of most recent run
-    private double nonDefectPercentage;   //Contains non-combination probability of most recent run iteration
+    private double nonDefectPercentage;   //Contains percentage of non-defects of most recent run iteration
     private TestResults runTestResults; //Contains test results of most recent run iteration
     private int numIterations;  //Contains number of iterations in the last run
     private final Random random = new Random(System.currentTimeMillis());
@@ -28,7 +28,7 @@ public class HillClimber {
 
     public HillClimber(Sat sat){
         this.sat = sat;
-        runExitCriteria = "Never been run.";
+        lastRunTimedOut = false;
         runTime = -1;
         nonDefectPercentage = -1.0;
         numIterations = 0;
@@ -42,48 +42,54 @@ public class HillClimber {
         this.pcs.removePropertyChangeListener(listener);
     }
     
-    public ArrayList<DNAStrand> run(int timeLimitSeconds, double minNonComboProbability, int strandSize) throws IOException {
-        double nonDefectPercentage;
+    public ArrayList<DNAStrand> run(int timeLimitSeconds, double thresholdDefectPercentage, int strandSize, AlgorithmType algorithmType) throws IOException {
         //Create initial DNA strand list
         int number = sat.getNumUniqueVariables() * 2;  //Need a strand for true and false states of each variable.
         ArrayList<DNAStrand> strands = new ArrayList<>();
-        ArrayList<DNAStrand> oldStrands;
+        ArrayList<DNAStrand> savedStrands;
         for(int i = 0; i<number; i++){
             strands.add(new DNAStrand(strandSize));
         }
-        oldStrands = cloneList(strands);
+        savedStrands = strands;
         
-        //Test list
+        //Get initial score for set of DNA strands
         StrandTest tester = new StrandTest();
-        runTestResults = tester.runAllTests(strands);
-        TestResults oldTestResults = runTestResults.clone();
-        nonDefectPercentage = runTestResults.getOverallNoncombiningProbability();
+        runTestResults = tester.runTests(strands);
+        String structure = runTestResults.getSecondaryStructure();
+        int defects = findNumDefects(structure);
+        int savedDefects = defects;
+        nonDefectPercentage = 1-((double)defects/(strandSize*strands.size()));
         
-        //Climb the hill with annealing
+        //Climb the hill
         long start = java.time.Instant.now().getEpochSecond();
         long time=0;
-        //double annealingProbability = 0.2;
-        //double annealingProbability = 0.8;
-        double annealingProbability = 1/strands.size();
-        pcs.firePropertyChange("annealingProbability", 0.0, annealingProbability);
-        double temperature = 1;
+        //double newRandomStrandProbability = 0.2;
+        //double newRandomStrandProbability = 0.8;
+        double newRandomStrandProbability = 1/strands.size();
+        double acceptBadProb = 0.900000000000000000000;
+        pcs.firePropertyChange("acceptBadProb", 0.0, acceptBadProb);
+        //double temperature = 1;
+        double temperature = (defects)/log(acceptBadProb);
         double coolingRate = 0.05;
         double s;
         double s_prime;
         double delta_s;
+        double cumulativeMovingAverage = defects;
         boolean useNewStrand;
-        boolean timedOut = false;
         
         numIterations = 1;
-        while((time < timeLimitSeconds || timeLimitSeconds < 0) && nonDefectPercentage < minNonComboProbability) {
+        while((time < timeLimitSeconds || timeLimitSeconds < 0) && nonDefectPercentage < thresholdDefectPercentage) {
+            //Make mutable copy of savedStrands
+            strands = cloneList(savedStrands);
+            
             //Figure out which strand is the most problematic
-            String structure = runTestResults.getSecondaryStructure();
+            structure = runTestResults.getSecondaryStructure();
             int index = findProblemStrand(structure);
             if(index < 0) break;
             
-            //Randomly (with decaying probability) replace a whole DNA strand with a 
-            //  random strand or fix a part of a strand.  This is the annealing part.
-            useNewStrand = random.nextDouble() <= annealingProbability;
+            //Randomly replace a whole DNA strand with a random strand or fix 
+            //  a part of a strand.  This mutation helps reduce local minima traps
+            useNewStrand = random.nextDouble() <= newRandomStrandProbability;
             if(useNewStrand) {
                 strands.set(index, new DNAStrand(strandSize));
             } else {
@@ -98,53 +104,61 @@ public class HillClimber {
                 }
             }
             
-            //Test again and fix new temperature and annealing probability
-            //TODO: Fit this into new algorithm
+            //Get new score
             TestResults oldTest = runTestResults;
-            runTestResults = tester.runAllTests(strands);
-            pcs.firePropertyChange("lastRunTestResults", oldTest, runTestResults);
-            
-            int defects = findNumDefects(structure);
+            runTestResults = tester.runTests(strands);
             structure = runTestResults.getSecondaryStructure();
-            
-            
-            s = 1-((double)defects/(strandSize*strands.size()));
             defects = findNumDefects(structure);
-            s_prime = 1-((double)defects/(strandSize*strands.size()));
-            double oldPercentage = nonDefectPercentage;
-            nonDefectPercentage = s_prime;
-            pcs.firePropertyChange("nonDefectPercentage", oldPercentage, nonDefectPercentage);
             
-            delta_s = s - s_prime;
-            //temperature = (delta_s)/log(annealingProbability);
-            temperature *= 1-coolingRate;
-            double temp = Math.pow(Math.E, (-delta_s)/temperature);
-            if (temp < annealingProbability) {
-                double oldProb = annealingProbability;
-           //     annealingProbability = temp;
-                pcs.firePropertyChange("annealingProbability", oldProb, annealingProbability);
-            }
+            //Decide on acceptance
+            if (defects < savedDefects || algorithmType.equals(AlgorithmType.Relaxed)) { //Relaxed accepts all solutions
+                savedDefects = defects;
+                savedStrands = strands;
+                pcs.firePropertyChange("lastRunTestResults", oldTest, runTestResults);
+            } else if (algorithmType.equals(AlgorithmType.Annealing)) { //Annealing accepts worse with decaying probability
+                if(random.nextDouble() < acceptBadProb) {
+                    savedDefects = defects;
+                    savedStrands = strands;
+                    pcs.firePropertyChange("lastRunTestResults", oldTest, runTestResults);
+                }
+            } //else (algorithmType.equals(AlgorithmType.Vanilla)) do nothing  //Vanilla rejects all worse solutions
+            
+            //Fix new temperature and probability of accepting worse solutions
+            delta_s = Math.abs(savedDefects - defects);
+            //cumulativeMovingAverage = (delta_s + numIterations*cumulativeMovingAverage)/(numIterations+1);
+            double oldTemp = temperature;
+            //temperature = (cumulativeMovingAverage)/log(acceptBadProb);
+            temperature = (-2.0)/log(acceptBadProb);
+            pcs.firePropertyChange("temperature", oldTemp, temperature);
+            //temperature *= 1-coolingRate;
+            //temperature -= delta_temperature;
+            //acceptBadProb = Math.pow(Math.E, (-((double)delta_s))/temperature);
+            double oldProb = acceptBadProb;
+            acceptBadProb = Math.pow(Math.E, (-2.1)/temperature);
+            pcs.firePropertyChange("acceptBadProb", oldProb, acceptBadProb);
+            
+            //Recalculate exit criteria
+                //Figure out new nonDefectPercentage
+            double oldPercentage = nonDefectPercentage;
+            nonDefectPercentage = 1-((double)savedDefects/(strandSize*strands.size()));
+            pcs.firePropertyChange("nonDefectPercentage", oldPercentage, nonDefectPercentage); //If solution was rejected, this does nothing
         
-            //Exit when timeLimitSeconds is hit or minNonComboProbability is hit
+                //Figure out new elapsed time
             time = java.time.Instant.now().getEpochSecond() - start;
-            if(time > timeLimitSeconds && timeLimitSeconds > 0) timedOut = true;
+            
+            //Update iteration count
             numIterations++;
             pcs.firePropertyChange("lastNumIterations",numIterations-1,numIterations);
-            
-            //Save info from last iteration
-            oldStrands = cloneList(strands);
-            oldTestResults = runTestResults;
         }
+        
+        //Record exit criterion
+        lastRunTimedOut = (time > timeLimitSeconds && timeLimitSeconds > 0);
         
         //Record run stats
         runTime = (int)time;
-        this.nonDefectPercentage = nonDefectPercentage;
-        if(timedOut){
-            runExitCriteria = "Run timed out.";
-        } else {
-            runExitCriteria = "Threshold combination probability met.";
-        }
-        return strands;
+        
+        //Return set of strands that were found
+        return savedStrands;
     }
     
     public TestResults getLastRunTestResults() {
@@ -159,8 +173,8 @@ public class HillClimber {
         return nonDefectPercentage;
     }
     
-    public String getLastRunExitCriteria() {
-        return runExitCriteria;
+    public boolean getLastRunExitCriteria() {
+        return lastRunTimedOut;
     }
 
     public int getLastNumIterations() {

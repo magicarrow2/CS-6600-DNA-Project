@@ -12,8 +12,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,128 +23,17 @@ import java.util.logging.Logger;
 public class StrandTest {
     private final String bin;
     private final String home;
-//    private final String singleStrandTestFilename = "SST";
-    private final String combinationTestFilename = "CT";
-    private double minFreeEnergy;  //This is a horrible cluge.  It is set when getSecondaryStructure is run.
+    private final String testFileName = "TempTestFile";
     
     public StrandTest() {
         bin = System.getProperty("user.dir") + "/nupack3.0.4/bin";
         home = System.getProperty("user.dir") + "/nupack3.0.4";
     }
     
-    public TestResults runAllTests(List<DNAStrand> strands) throws IOException {
-//        double overallNoncombiningProbability;
-//        ArrayList<Double> straightnessProbability = new ArrayList<>();
-        String secondaryStructure;
-        
-        
-//        overallNoncombiningProbability = getCombinationProbability(strands);
-        secondaryStructure = getSecondaryStructure(strands);
-//        for(DNAStrand strand : strands) {
-//            straightnessProbability.add(getStraightnessProbability(strand));
-//        }
-        
-//        TestResults results = new TestResults(overallNoncombiningProbability, straightnessProbability, secondaryStructure);
-        TestResults results = new TestResults(0.0, secondaryStructure, minFreeEnergy);
-        return results;
-    }
-    
-    /**Determines the probability of getting a straight strand
-     * 
-     * @param strand Single strand to test for straightness
-     * @return
-     * @throws IOException 
-     */
-/*    public double getStraightnessProbability(DNAStrand strand) throws IOException {
-        //Put input strand in a file
-        BufferedWriter out = null;
-        try
-        {
-            FileWriter fstream = new FileWriter(bin + "/" + singleStrandTestFilename + ".in");
-            out = new BufferedWriter(fstream);
-            
-            //Use indistinguishable strand to make sure it won't react with itself?
-            //Write out single strand in -multi option format
-            out.write("1\n"); //Number of strands
-            out.write(strand.toString()); //Strand to be tested
-            out.write("\n");
-            out.write("1\n"); //Strand numberical identifier
-            for(int i=0; i<strand.size(); i++){
-                out.write(".");  //Desired strand secondary structure
-            }
-        } catch (IOException e) {
-            System.err.println("Error: " + e.getMessage());
-        } finally {
-            if(out != null){
-                out.close();
-            }
-        }
-        
-        //Get the probability
-        return runProbabilityTest(singleStrandTestFilename);
-    }
-*/    
-    /**Determines the probability of strands combining with each other.
-     * 
-     * @param strands
-     * @return
-     * @throws IOException 
-     */
-/*    public double getCombinationProbability(List<DNAStrand> strands) throws IOException {
-        //Write to file
-        writeInputFile(strands, combinationTestFilename);
-        
-        //Run probability test and return results
-        return runProbabilityTest(combinationTestFilename);
-    }
-*/    
-    /**Takes a ".in" test file and executes the "prob" executable from the NuPack3.0.4 package against it.
-     * Uses the "-multi" and "-material dna" options in the call.
-     * 
-     * @param inputFilenameStem Name of the input file to be tested without the ".in" file extension.
-     * @return Probability (0.0000 to 1.0000) of strands creating the structure in question.
-     * @throws IOException 
-     */
-/*    private double runProbabilityTest(String inputFilenameStem) throws IOException {
-        //Process the strand
-        File tempFile = new File(inputFilenameStem + ".txt");
-        tempFile.createNewFile();
-        tempFile.setReadable(true);
-        tempFile.setWritable(true);
-        ProcessBuilder proc = new ProcessBuilder("./prob", "-material", "dna", "-multi",  inputFilenameStem);
-        proc.environment().put("NUPACKHOME", home);
-        proc.redirectOutput(tempFile);
-        proc.directory(new File(bin));
-        Process p = proc.start();
-        try {
-            p.waitFor();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(StrandTest.class.getName()).log(Level.SEVERE, null, ex);
-            throw new IOException("Straightness probability testing interrupted.\n");
-        }
-        
-        //Get probability from file
-        FileReader inStream = new FileReader(tempFile);
-        BufferedReader in = new BufferedReader(inStream);
-        while(!in.readLine().contains("% Probability:"));  //Skip past header stuff
-        String probString = in.readLine();
-        double probability;
-        if(probString.contains("nan")) {
-            probability = 1.0;
-        } else {
-            BigDecimal dec = new BigDecimal(probString);
-            probability = dec.doubleValue();
-        }
-        
-        return probability;
-    }
-*/    
-    public String getSecondaryStructure(List<DNAStrand> strands) throws IOException {
-        String filename = combinationTestFilename + "mfe";
-        
+    public TestResults runTests(List<DNAStrand> strands) throws IOException {
         //Find the secondary structure
-        writeInputFile(strands, filename);
-        ProcessBuilder proc = new ProcessBuilder("./mfe", "-material", "dna", "-multi", filename);
+        writeInputFile(strands, testFileName);
+        ProcessBuilder proc = new ProcessBuilder("./mfe", "-material", "dna", "-multi", testFileName);
         proc.environment().put("NUPACKHOME", home);
         proc.directory(new File(bin));
         Process p = proc.start();
@@ -158,9 +45,10 @@ public class StrandTest {
         }
         
         //Parse the secondary structure information from the file
-        FileReader inStream = new FileReader(bin + "/" + filename + ".mfe");
+        FileReader inStream = new FileReader(bin + "/" + testFileName + ".mfe");
         BufferedReader in = new BufferedReader(inStream);
         String structureString;
+        double minFreeEnergy;
         try {
             //Skip header stuff
             while(!in.readLine().startsWith("% %%%%%%%%"));
@@ -172,7 +60,9 @@ public class StrandTest {
             
             //Get MFE structure
             structureString = in.readLine();
-        } catch (NullPointerException e) { //Disjoint strands case (meaning algorithm succeeded)
+        } 
+        //Catch disjoint strands case (meaning algorithm succeeded in finding non-combining strands)
+        catch (NullPointerException e) { 
             StringBuilder str = new StringBuilder();
                 for (int i=0; i<strands.size(); i++) {
                     for (int j=0; j<strands.get(0).size(); j++) {
@@ -182,8 +72,12 @@ public class StrandTest {
                 }
                 str.deleteCharAt(str.length()-1);  //Delete extraneous "+" at end of structure
                 structureString = str.toString();
+                minFreeEnergy = 0.0;
         }
-        return structureString;
+        
+        //Return the results
+        TestResults results = new TestResults(structureString, minFreeEnergy);
+        return results;
     }
     
     private void writeInputFile(List<DNAStrand> strands, String FilenameStem) throws IOException {
