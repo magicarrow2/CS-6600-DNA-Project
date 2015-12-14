@@ -18,7 +18,7 @@ import java.util.Random;
  */
 public class HillClimber {
     private final Sat sat;
-    private boolean lastRunTimedOut;  //Contains exit criteria for the most recent run
+    private boolean lastRunCompletedIterations;  //Contains exit criteria for the most recent run
     private int runTime;    //Contains run time of most recent run
     private double nonDefectPercentage;   //Contains percentage of non-defects of most recent run iteration
     private TestResults runTestResults; //Contains test results of most recent run iteration
@@ -28,7 +28,7 @@ public class HillClimber {
 
     public HillClimber(Sat sat){
         this.sat = sat;
-        lastRunTimedOut = false;
+        lastRunCompletedIterations = false;
         runTime = -1;
         nonDefectPercentage = -1.0;
         numIterations = 0;
@@ -42,7 +42,7 @@ public class HillClimber {
         this.pcs.removePropertyChangeListener(listener);
     }
     
-    public ArrayList<DNAStrand> run(int timeLimitSeconds, double thresholdDefectPercentage, int strandSize, AlgorithmType algorithmType) throws IOException {
+    public ArrayList<DNAStrand> run(int iterationLimit, double thresholdDefectPercentage, int strandSize, AlgorithmType algorithmType) throws IOException {
         //Create initial DNA strand list
         int number = sat.getNumUniqueVariables() * 2;  //Need a strand for true and false states of each variable.
         ArrayList<DNAStrand> strands = new ArrayList<>();
@@ -74,8 +74,8 @@ public class HillClimber {
         double temperature = temp_max;
         pcs.firePropertyChange("temperature", 0.0, temperature);
         double coolingRate;
-        if(timeLimitSeconds > 0) {
-            coolingRate = -log(temp_min/temp_max)/timeLimitSeconds;
+        if(iterationLimit > 0) {
+            coolingRate = -log(temp_min/temp_max)/iterationLimit;
         } else {
             coolingRate = -log(temp_min/temp_max)/(strands.size()*strandSize);
         }
@@ -85,7 +85,7 @@ public class HillClimber {
         
         numIterations = 1;
         pcs.firePropertyChange("lastNumIterations",numIterations-1,numIterations);
-        while((time < timeLimitSeconds || timeLimitSeconds < 0) && nonDefectPercentage < thresholdDefectPercentage) {
+        while((numIterations < iterationLimit || iterationLimit < 0) && nonDefectPercentage < thresholdDefectPercentage) {
             //Make mutable copy of savedStrands
             strands = cloneList(savedStrands);
             
@@ -155,7 +155,7 @@ public class HillClimber {
         }
         
         //Record exit criterion
-        lastRunTimedOut = (time > timeLimitSeconds && timeLimitSeconds > 0);
+        lastRunCompletedIterations = (iterationLimit > iterationLimit && iterationLimit > 0);
         
         //Record run stats
         runTime = (int)time;
@@ -172,12 +172,12 @@ public class HillClimber {
         return runTime;
     }
     
-    public double getLastRunCombinationProbablility() {
+    public double getLastRunNonDefectPercentage() {
         return nonDefectPercentage;
     }
     
     public boolean getLastRunExitCriteria() {
-        return lastRunTimedOut;
+        return lastRunCompletedIterations;
     }
 
     public int getLastNumIterations() {

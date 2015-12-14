@@ -77,7 +77,7 @@ public class StickerModelExecutor extends SwingWorker<String,String> implements 
             out.write ("\n\n");
             out.write("Number of iterations: " + climber.getLastNumIterations() + "\n");
             out.write("Completion Time: " + climber.getLastRunTime() + " seconds \n");
-            out.write("Percentage of defective nucleotides: " + (1-climber.getLastRunCombinationProbablility())*100 + "%\n");
+            out.write("Percentage of defective nucleotides: " + (1-climber.getLastRunNonDefectPercentage())*100 + "%\n");
             out.write("Minimum Free Energy (MFE): " + climber.getLastRunTestResults().getMFE() + "\n");
             out.write("Strands:\n");
             for(DNAStrand strand : strands) {
@@ -92,7 +92,7 @@ public class StickerModelExecutor extends SwingWorker<String,String> implements 
                 //Write the results to the screen
                 System.out.print("\nNumber of iterations: " + climber.getLastNumIterations() + "\n");
                 System.out.print("Completion Time: " + climber.getLastRunTime() + " seconds \n");
-                System.out.print("Percentage of defective nucleotides: " + (1-climber.getLastRunCombinationProbablility())*100 + "%\n");
+                System.out.print("Percentage of defective nucleotides: " + (1-climber.getLastRunNonDefectPercentage())*100 + "%\n");
                 System.out.print("Minimum Free Energy (MFE): " + climber.getLastRunTestResults().getMFE() + "\n");
                 System.out.print("Strands:\n");
                 for(DNAStrand strand : strands) {
