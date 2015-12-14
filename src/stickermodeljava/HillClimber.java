@@ -55,6 +55,7 @@ public class HillClimber {
         //Get initial score for set of DNA strands
         StrandTest tester = new StrandTest();
         runTestResults = tester.runTests(strands);
+        pcs.firePropertyChange("lastRunTestResults", null, runTestResults);
         String structure = runTestResults.getSecondaryStructure();
         int defects = findNumDefects(structure);
         int savedDefects = defects;
@@ -63,21 +64,27 @@ public class HillClimber {
         //Climb the hill
         long start = java.time.Instant.now().getEpochSecond();
         long time=0;
-        //double newRandomStrandProbability = 0.2;
-        //double newRandomStrandProbability = 0.8;
         double newRandomStrandProbability = 1/strands.size();
-        double acceptBadProb = 0.900000000000000000000;
+        double acceptBadProb = 0.9;
         pcs.firePropertyChange("acceptBadProb", 0.0, acceptBadProb);
+        double endAcceptBadProb = 0.1;
         //double temperature = 1;
-        double temperature = (defects)/log(acceptBadProb);
-        double coolingRate = 0.05;
-        double s;
-        double s_prime;
+        double temp_max = -2.0/log(acceptBadProb);
+        double temp_min = -2.0/log(endAcceptBadProb);
+        double temperature = temp_max;
+        pcs.firePropertyChange("temperature", 0.0, temperature);
+        double coolingRate;
+        if(timeLimitSeconds > 0) {
+            coolingRate = -log(temp_min/temp_max)/timeLimitSeconds;
+        } else {
+            coolingRate = -log(temp_min/temp_max)/(strands.size()*strandSize);
+        }
+        
         double delta_s;
-        double cumulativeMovingAverage = defects;
         boolean useNewStrand;
         
         numIterations = 1;
+        pcs.firePropertyChange("lastNumIterations",numIterations-1,numIterations);
         while((time < timeLimitSeconds || timeLimitSeconds < 0) && nonDefectPercentage < thresholdDefectPercentage) {
             //Make mutable copy of savedStrands
             strands = cloneList(savedStrands);
@@ -110,32 +117,28 @@ public class HillClimber {
             structure = runTestResults.getSecondaryStructure();
             defects = findNumDefects(structure);
             
-            //Decide on acceptance
-            if (defects < savedDefects || algorithmType.equals(AlgorithmType.Relaxed)) { //Relaxed accepts all solutions
+            //Determine acceptance probability of worse solutions
+            double oldProb = acceptBadProb;
+            if(algorithmType.equals(AlgorithmType.Vanilla))
+                acceptBadProb = 0.0;
+            else if (algorithmType.equals(AlgorithmType.Relaxed))
+                acceptBadProb = 1.0;
+            else { //AlgorithmType.Annealing
+                delta_s = defects - savedDefects;
+                acceptBadProb = Math.pow(Math.E, -Math.abs(delta_s)/temperature);
+                //Adjust temperature
+                double oldTemp = temperature;
+                temperature = temp_max*Math.pow(Math.E, -coolingRate*time);
+                pcs.firePropertyChange("temperature", oldTemp, temperature);
+            }
+            pcs.firePropertyChange("acceptBadProb", oldProb, acceptBadProb);
+            
+            //Determine acceptance
+            if(defects < savedDefects || random.nextDouble() < acceptBadProb) {
                 savedDefects = defects;
                 savedStrands = strands;
                 pcs.firePropertyChange("lastRunTestResults", oldTest, runTestResults);
-            } else if (algorithmType.equals(AlgorithmType.Annealing)) { //Annealing accepts worse with decaying probability
-                if(random.nextDouble() < acceptBadProb) {
-                    savedDefects = defects;
-                    savedStrands = strands;
-                    pcs.firePropertyChange("lastRunTestResults", oldTest, runTestResults);
-                }
-            } //else (algorithmType.equals(AlgorithmType.Vanilla)) do nothing  //Vanilla rejects all worse solutions
-            
-            //Fix new temperature and probability of accepting worse solutions
-            delta_s = Math.abs(savedDefects - defects);
-            //cumulativeMovingAverage = (delta_s + numIterations*cumulativeMovingAverage)/(numIterations+1);
-            double oldTemp = temperature;
-            //temperature = (cumulativeMovingAverage)/log(acceptBadProb);
-            temperature = (-2.0)/log(acceptBadProb);
-            pcs.firePropertyChange("temperature", oldTemp, temperature);
-            //temperature *= 1-coolingRate;
-            //temperature -= delta_temperature;
-            //acceptBadProb = Math.pow(Math.E, (-((double)delta_s))/temperature);
-            double oldProb = acceptBadProb;
-            acceptBadProb = Math.pow(Math.E, (-2.1)/temperature);
-            pcs.firePropertyChange("acceptBadProb", oldProb, acceptBadProb);
+            }
             
             //Recalculate exit criteria
                 //Figure out new nonDefectPercentage

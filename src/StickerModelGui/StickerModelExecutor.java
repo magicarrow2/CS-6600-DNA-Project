@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import javax.swing.SwingWorker;
 import stickermodeljava.DNAStrand;
 import stickermodeljava.HillClimber;
@@ -69,8 +70,11 @@ public class StickerModelExecutor extends SwingWorker<String,String> implements 
             out.write(sat.toString() + "\n");
             out.write("Num variables " + sat.getNumUniqueVariables() + "\n");
             out.write("Variables: \n");
-            set.forEach((var) -> {System.out.print(var + " ");});
-            System.out.print ("\n\n");
+            Iterator<String> itr = set.iterator();
+            while(itr.hasNext()) {
+                out.write(itr.next() + " ");
+            }
+            out.write ("\n\n");
             out.write("Number of iterations: " + climber.getLastNumIterations() + "\n");
             out.write("Completion Time: " + climber.getLastRunTime() + " seconds \n");
             out.write("Percentage of defective nucleotides: " + (1-climber.getLastRunCombinationProbablility())*100 + "%\n");
