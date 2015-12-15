@@ -25,7 +25,7 @@
       <h1 class="title">CS 6600 DNA Computing Project</h1>
     </header>
     <div id="container">
-      <p class="tagline">This is a project for a master&#39;s class for turning a 3-SAT into a set of unique, straight, non-combining DNA strands representing the true and false states of the variables in the 3-SAT problem.</p>                                                                                                   
+      <p class="tagline">This is a project for an Intelligent Systems class for using a hill-climbing algorithm for turning a 3-SAT into a set of unique, straight, non-combining DNA strands representing the true and false states of the variables in the 3-SAT problem.</p>                                                                                                   
       <div id="main" role="main">
         <div class="download-bar">
         <div class="inner">
@@ -49,7 +49,10 @@
 <h3>
 <a id="problem-description" class="anchor" href="#problem-description" aria-hidden="true"><span class="octicon octicon-link"></span></a>Problem Description</h3>
 
-<p>The goal of the project is to input a 3-SAT problem and output a set of DNA strands that can represent the true and false states of each of the unique variables in the 3-SAT problem.  In order to create such a library of DNA strands, the DNA strands have to meet certain requirements:</p>
+
+<p>The goal of the project is to determine the utility of using a hill climbing algorithm to design DNA sequences useful for creating a DNA computer.</p>
+
+<p>The goal of the code is to input a 3-SAT problem and output a set of DNA strands that can represent the true and false states of each of the unique variables in the 3-SAT problem.  In order to create such a library of DNA strands, the DNA strands have to meet certain requirements:</p>
 
 <ul>
 <li>Each variable in the 3-SAT problem will be represented by a unique pair of unique DNA sequences: one of the pair represents False, the other represents True.</li>
@@ -67,15 +70,15 @@
 
 <p>We begin with creating an input file.  The 3-SAT file contains a 3-SAT equation in Conjunctive Normal Form (CNF).</p> 
 
-<p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Input%20File.jpeg" alt="input file"></p>
+<p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Big%20Input%20File.jpeg" alt="big input file"></p>
 
 <p>To make this work, the compiled jar file must be located in the same folder that the nupack4.0.3 folder is in.  The program is run with "java -jar StickerModelJava.jar [inputFile] [outputFile] [timeLimitinSeconds]".  All of the arguments are optional, but are position based.  If -h is used for the argument, the program displays a help page.  With no arguments, the program will ask for an input file or 3-SAT equation from the user.</p>
 
-<p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Demo2.png" alt="demo2"></p>
+<p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/DNA%20Compiler%20GUI.jpeg" alt="gui"></p>
 
 <p>The program will run for some time then output the results to the screen and to the file specified in the command arguments.  If no output file was specified, the results will be found in a file named "Results.txt".</p>
 
-<p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Demo%202%20Output%20File.jpeg" alt="demo 2 output file"></p>
+<p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Big%20Output%20File.jpeg" alt="big output file"></p>
 
 <p>The probability of straigtness and not combining is given as a number between 0.0 and 1.0.  As seen in this demonstration, 10 seconds is not long enough to find a valid solution.</p>
 
