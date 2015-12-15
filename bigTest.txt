@@ -1,0 +1,1 @@
+ (x v q v y) ^ (~q v ~p v y) ^ (~y v p v ~x) ^ (z v x v o) ^ (w v z v ~o) ^ (~t v z v ~w) ^ (t v s v ~z) ^ (x v r v ~t)
