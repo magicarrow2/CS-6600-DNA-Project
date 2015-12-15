@@ -50,6 +50,12 @@ public class HillClimber {
         for(int i = 0; i<number; i++){
             strands.add(new DNAStrand(strandSize));
         }
+        //Ensure uniqueness
+        int pointer = getDuplicateIndex(strands);
+        while(pointer >= 0) {
+            strands.set(pointer, new DNAStrand(strandSize));
+            pointer = getDuplicateIndex(strands);
+        }
         savedStrands = strands;
         
         //Get initial score for set of DNA strands
@@ -104,7 +110,7 @@ public class HillClimber {
                 int nucleotideNum = getDefectiveNucleotide(structure, index);
                 if (nucleotideNum > 0) strand.newNucleotide(nucleotideNum);
                 //Ensure uniqueness
-                int pointer = getDuplicateIndex(strands);
+                pointer = getDuplicateIndex(strands);
                 while(pointer >= 0) {
                     strands.set(pointer, new DNAStrand(strandSize));
                     pointer = getDuplicateIndex(strands);

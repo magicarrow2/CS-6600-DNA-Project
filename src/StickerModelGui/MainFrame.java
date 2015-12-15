@@ -105,7 +105,7 @@ public class MainFrame extends javax.swing.JFrame {
         mfeLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         mfeLabel.setText("0.0");
 
-        jLabel11.setText("Bad Acceptance Probability");
+        jLabel11.setText("Acceptance Probability");
 
         badProbLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         badProbLabel.setText("0.9");
@@ -185,9 +185,9 @@ public class MainFrame extends javax.swing.JFrame {
         resultsArea.setRows(5);
         jScrollPane1.setViewportView(resultsArea);
 
-        jLabel8.setText("Time Limit");
+        jLabel8.setText("Iteration Limit");
 
-        timeLimitField.setText("15");
+        timeLimitField.setText("120");
 
         jLabel9.setText("Strand Length");
 

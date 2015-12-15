@@ -273,7 +273,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel11">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Bad Acceptance Probability"/>
+            <Property name="text" type="java.lang.String" value="Acceptance Probability"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="badProbLabel">
@@ -341,12 +341,12 @@
     </Container>
     <Component class="javax.swing.JLabel" name="jLabel8">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Time Limit"/>
+        <Property name="text" type="java.lang.String" value="Iteration Limit"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="timeLimitField">
       <Properties>
-        <Property name="text" type="java.lang.String" value="15"/>
+        <Property name="text" type="java.lang.String" value="120"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel9">
