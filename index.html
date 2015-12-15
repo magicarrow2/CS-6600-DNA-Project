@@ -12,7 +12,7 @@
   <script type="text/javascript" src="javascripts/script.js"></script>
 
   <title>CS 6600 DNA Computing Project</title>
-  <meta name="description" content="This is a project for a master&#39;s class for turning a 3-SAT into a set of unique, straight, non-combining DNA strands representing the true and false states of the variables in the 3-SAT problem.">                                                                                          
+  <meta name="description" content="This is a project for an Intelligent Systems class which demonstrates the utility of using hill-climbing algorithms for turning a 3-SAT equation into a set of DNA strands for a DNA computer.">                                                                                          
 
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
@@ -25,7 +25,7 @@
       <h1 class="title">CS 6600 DNA Computing Project</h1>
     </header>
     <div id="container">
-      <p class="tagline">This is a project for an Intelligent Systems class for using a hill-climbing algorithm for turning a 3-SAT into a set of unique, straight, non-combining DNA strands representing the true and false states of the variables in the 3-SAT problem.</p>                                                                                                   
+      <p class="tagline">This is a project for an Intelligent Systems class which demonstrates the utility of using hill-climbing algorithms for turning a 3-SAT equation into a set of DNA strands for a DNA computer.</p>                                                                                                   
       <div id="main" role="main">
         <div class="download-bar">
         <div class="inner">
@@ -50,9 +50,9 @@
 <a id="problem-description" class="anchor" href="#problem-description" aria-hidden="true"><span class="octicon octicon-link"></span></a>Problem Description</h3>
 
 
-<p>The goal of the project is to determine the utility of using a hill climbing algorithm to design DNA sequences useful for creating a DNA computer.</p>
+<p>The goal of the project is to determine the utility of using a hill climbing algorithm to design DNA sequences useful for creating a DNA computer.  The project will compare the performance of three different hill-climbing variants: a regular hill-climber with mutation, a hill-climber with simulated annealing and mutation, and a "relaxed greediness" hill-climber of my own invention.</p>
 
-<p>The goal of the code is to input a 3-SAT problem and output a set of DNA strands that can represent the true and false states of each of the unique variables in the 3-SAT problem.  In order to create such a library of DNA strands, the DNA strands have to meet certain requirements:</p>
+<p>The goal of the code is to input a 3-SAT problem and output a set of DNA strands that can represent the true and false states of each of the unique variables in the 3-SAT problem.  This requires a search in a combinatorial search space.  In order to create such a library of DNA strands, the DNA strands have to meet certain requirements:</p>
 
 <ul>
 <li>Each variable in the 3-SAT problem will be represented by a unique pair of unique DNA sequences: one of the pair represents False, the other represents True.</li>
@@ -65,6 +65,8 @@
 
 <p>This project is important because there are many cases in DNA computing besides this one where DNA strands that have the above mentioned properties are desirable.  In order to represent a concept using a DNA strand, that DNA strand has to be unique, stable, and combine predictably.  Other DNA computers such as ones using toe-hold mediated strand displacement must have DNA strands with these properties.  Unexpected side reactions can easily break a DNA computer.  The self-assembly attribute of DNA strands is what makes DNA computing work, but it is simultaneously what makes the design of such computers hard.</p>
 
+<p>DNA computer design requires multiple searches in combinatorial solution space.  This requires efficient algorithms to be able to search the space, or an analytic method of solving the problem directly without searching.  Since an analytic method does not yet exist for DNA computer strand design, we must resort to searching.
+
 <h3>
 <a id="demonstration" class="anchor" href="#demonstration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demonstration</h3>
 
@@ -72,22 +74,35 @@
 
 <p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Big%20Input%20File.jpeg" alt="big input file"></p>
 
-<p>To make this work, the compiled jar file must be located in the same folder that the nupack4.0.3 folder is in.  The program is run with "java -jar StickerModelJava.jar [inputFile] [outputFile] [timeLimitinSeconds]".  All of the arguments are optional, but are position based.  If -h is used for the argument, the program displays a help page.  With no arguments, the program will ask for an input file or 3-SAT equation from the user.</p>
+<p>To make this work, the compiled jar file must be located in the same folder that the nupack4.0.3 folder is in.  The program is run with "java -jar StickerModelJava.jar".  The system then launches a GUI wherein the user may enter the name of the input file, select an algorithm, and choose an output filename.  The user also has the option of selecting the number of nucleotides in each DNA strand (all strands are the same length).  There is a field labeled "Iteration Limit" where the user may choose how long he or she wants the program to search.  If the user wants to let the program run indefinitely he or she should enter a negative number.</p>
 
 <p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/DNA%20Compiler%20GUI.jpeg" alt="gui"></p>
 
-<p>The program will run for some time then output the results to the screen and to the file specified in the command arguments.  If no output file was specified, the results will be found in a file named "Results.txt".</p>
+<p>After pressing "Run", the program will run for some time.  As the program runs, the user can see algorithm working as values update in the MFE and Stats windows.  When the program is finished, the results will be displayed on the screen and written to the output file that the user specified as seen below.</p>
 
 <p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Big%20Output%20File.jpeg" alt="big output file"></p>
 
-<p>The probability of straigtness and not combining is given as a number between 0.0 and 1.0.  As seen in this demonstration, 10 seconds is not long enough to find a valid solution.</p>
+<p>The full process can be seen in the short video below (sorry, no audio).</p>
+
+<p><iframe width="420" height="315" src="https://www.youtube.com/embed/WSjGlEYZ9zY" frameborder="0" allowfullscreen></iframe></p>
+
+<p>Those who desire to try it for themselves can download the code from <a href="https://github.com/magicarrow2/CS-6600-DNA-Project">GitHub</a>.  The "test.txt" and "bigTest.txt" 3-SAT input files are included in the repository to give the user test examples.  The code was built using Netbeans 8 and a compiled binary has been included as well.  The nupack4.0.3 folder must be in the same directory as the  JAR binary for the program to work.</p>
 
 <h3>
 <a id="how-it-works" class="anchor" href="#how-it-works" aria-hidden="true"><span class="octicon octicon-link"></span></a>How It Works</h3>
 
-<p>This program uses a hill climbing algorithm with simulated annealing to find the solution.  The initial solution is chosen randomly.  The probability of the equilibrium structure of the DNA strands being straight and non-hybridizing is the value used to score the solution.  Mutations in the solution are applied to the strand with the most hybridizing bases.  Mutations are made in one of two ways: a nucleotide in a hybridization area is changed or an entire strand is replaced with a random strand.  The method of mutation is chosen randomly.  The annealing part of the algorithm slowly reduces the probability of replacing an entire strand and increases the probability of changing only a single nucleotide.</p>
+<p>The program begins with the user specifying an input file that contains a 3-SAT boolean equation.  The program then parses the equation to extract the number of unique variables contained in the equation.  The program then creates a randomly generated set of DNA strands that is twice the size of the variable set.  Half of the strands represent the true state of the variables, the other half represents the false state.</p>
 
-<p>The <a href="http://www.nupack.org/">NuPack DNA analytics software</a> is used to find the probability of hybridization and the lowest energy secondary structure (equilibrium structure) of the DNA strands.</p>
+<p>Ideally, the program would check the minimum free energy structure of all possible circular permutations of DNA strand combinations.  Unfortunately, that would be extremely computationally expensive for large sets of DNA strands.  To simplify the calculations for the purposes of this experiment, only one permutation was used.  This permutation contains all of the strands in the set.  The program optimizes that permutation to be as straight and non-hybridizing as possible.</p>
+
+<p>The program utilizes a DNA analytics software package from NuPack.org to find the minimum free energy (MFE) and structure of the strand permutation.  The structure is given in dot-parens form.  The hill climber portion of the code consists of selecting the strand with the most hybridizing nucleotides, randomly selecting one of its hybridizing nucleotides, then randomly changing it to be a new nucleotide.  The DNA strands consist entirely of adenine(A), cytosine(C), and thymine(T).</p>
+
+<p>There is also a random chance of replacing the whole strand with a new random strand instead of just changing the one nucleotide.  This is a mutation method to help prevent getting "stuck" in a local minima.  A little experimentation found that a probability of mutation equal to 1 divided by the number of DNA strands worked well, so it was used in all three algorithms.  The score of a solution is determined by counting the number of hybridizing nucleotides in the whole DNA strand set.</p>
+
+<p>All three algorithms are hill-climbers, but they each have unique rules for moving to a new node in the search space.  The vanilla hill-climber accepts new versions of the DNA strand set only if they have a lower score.  The hill-climber with simulated annealing accepts worse scores with a decaying probability.  The hill-climber with "relaxed greediness" accepts all new DNA strand sets regardless of the score.  This last algorithm could be considered a type of control because it tests how well the strand/nucleotide substitution part of the algorithm finds a good solution by itself.  Since changing one nucleotide can drastically change the shape of the whole structure, it can make the solution better or worse.  It's a bit like a game of whack-a-mole, but the general trend should be towards improvement.</p>
+
+<p>It may be worth noting that in all of the algorithms, if duplicate strands appear in a new solution, one of the duplicates is replaced with a randomly generated strand.
+</p>
 
 <h3>
 <a id="acknowledgements" class="anchor" href="#acknowledgements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Acknowledgements</h3>
