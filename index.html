@@ -76,19 +76,27 @@
 
 <p>We begin with creating an input file.  The 3-SAT file contains a 3-SAT equation in Conjunctive Normal Form (CNF).</p> 
 
-<p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Big%20Input%20File.jpeg" alt="big input file"></p>
+<figure>
+<img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Big%20Input%20File.jpeg" alt="Missing image for Figure 1.  CNF format file contains something like this: (x v x y) ^ (~x v ~x v y) ^ (~x v ~y v ~y)">
+<figcaption>Figure 1: Example Input File</figcaption></figure>
 
 <p>To make this work, the compiled jar file must be located in the same folder that the nupack4.0.3 folder is in.  The program is run with "java -jar StickerModelJava.jar".  The system then launches a GUI wherein the user may enter the name of the input file, select an algorithm, and choose an output filename.  The user also has the option of selecting the number of nucleotides in each DNA strand (all strands are the same length).  There is a field labeled "Iteration Limit" where the user may choose how long he or she wants the program to search.  If the user wants to let the program run indefinitely he or she should enter a negative number.</p>
 
-<p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/DNA%20Compiler%20GUI.jpeg" alt="gui"></p>
+<figure>
+<img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/DNA%20Compiler%20GUI.jpeg" alt="Missing GUI image for Figure 2.">
+<figcaption>Figure 2: Hill climbing application</figcaption></figure>
 
 <p>After pressing "Run", the program will run for some time.  As the program runs, the user can see algorithm working as values update in the MFE and Stats windows.  When the program is finished, the results will be displayed on the screen and written to the output file that the user specified as seen below.</p>
 
-<p><img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Big%20Output%20File.jpeg" alt="big output file"></p>
+<figure>
+<img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Big%20Output%20File.jpeg" alt="Missing image of output file for Figure 3.">
+<figcaption>Figure 3: Example output file</figcaption></figure>
 
 <p>The full process can be seen in the short video below (sorry, no audio).</p>
 
-<p><iframe width="420" height="315" src="https://www.youtube.com/embed/WSjGlEYZ9zY" frameborder="0" allowfullscreen></iframe></p>
+<figure>
+<iframe width="420" height="315" src="https://www.youtube.com/embed/WSjGlEYZ9zY" frameborder="0" allowfullscreen></iframe>
+<figcaption>Video 1: Demonstration of all three algorithms on a 2-variable equation</figcaption></figure>
 
 <p>Those who desire to try it for themselves can download the code from <a href="https://github.com/magicarrow2/CS-6600-DNA-Project">GitHub</a>.  The "test.txt" and "bigTest.txt" 3-SAT input files are included in the repository to give the user test examples.  The code was built using Netbeans 8 and a compiled binary has been included as well.  The nupack4.0.3 folder must be in the same directory as the JAR binary for the program to work.</p>
 
@@ -106,15 +114,35 @@
 
 <p>All three algorithms are hill-climbers, but they each have unique rules for moving to a new node in the search space.  The vanilla hill-climber accepts new versions of the DNA strand set only if they have a lower score.  The hill-climber with simulated annealing accepts worse scores with a decaying probability.  The hill-climber with "relaxed greediness" accepts all new DNA strand sets regardless of the score.  This last algorithm could be considered a type of control because it tests how well the strand/nucleotide substitution part of the algorithm finds a good solution by itself.  Since changing one nucleotide can drastically change the shape of the whole structure, it can make the solution better or worse.  It's a bit like a game of whack-a-mole, but the general trend should be towards improvement.</p>
 
-<p>It may be worth noting that in all of the algorithms, if duplicate strands appear in a new solution, one of the duplicates is replaced with a randomly generated strand.</p>
+<p>The cooling schedule for the simulated annealing is chosen for each run by assuming an average change of 2 defects per iteration and back calculating start and end temperatures using start and end rejection probabilities of 0.9 and 0.1, respectively.  To find this, the following equation is used: T=-C/ln(P) where 'T' is temperature, 'P' is probability, and 'C' is the heat constant (which is equal to 2 in this case).
+</p>
+
+<p>The heat capacity in the probability equation is also based on a 2 defect change per iteration.  The probability equation used is: P=e^(-2/(T_0*e^(-C*t))) where 'T_0' is the initial temperature, 't' is the current iteration, 'C' is the heat constant (which is equal to 2 in this case), and P is the probability.
+</p>
+
+<p>It may be worth noting that in all of the algorithms, if duplicate strands appear in a new solution, one of the duplicates is replaced with a randomly generated strand.  It is also worth noting that it is possible for the DNA strands to become completely "disjoint".  When this happens, the NuPack software returns with errors complaining about disjoint strands and gives empty result files.  When this occurs, I assume it to mean there are 0 defects, which I take to mean a true solution is found and the program exits.</p>
 
 
 <h3>
 <a id="conclusions" class="anchor" href="#conclusions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusions</h3>
 
-<p>After running several tests with each of the three hill-climbing algorithms, the algorithm with relaxed greediness proved to perform the best.  Figure 1 shows the average percentage of hybridizing nucleotides for each of the algorithms when given a 10-variable problem and a limit of 150 iterations.  With a problem set that size, each iteration takes about a full second. <img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Average%20Percentage%20of%20Defective%20Nucleotides.png" alt="average percentage of defective nucleotides"></p>
+<p>After running several tests with each of the three hill-climbing algorithms, the algorithm with relaxed greediness and the algorithm with simulated annealing performed about the same with the relaxed greedy algorithm having an inconclusive lead.  The vanilla hill-climber performed the worst by a wide margin.  The vanilla hill-climber had a high tendency to get stuck on local a local minimum and stop progressing.</p>
 
+<p>Figure 4 shows the percentage of hybridizing nucleotides for each of the algorithms when given a 10-variable problem with 15-nucleotide strands and a limit of 150 iterations.  With a problem set that size, each iteration takes about a full second.</p>
 
+<figure>
+<img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Percentage%20of%20Defective%20Nucleotides.png" alt="Missing figure 4: Percentage of defective nucleotides">
+<figcaption>Figure 4: Percentage of Defective Nucleotides</figcaption></figure>
+
+<p>Figure 5 shows the number of iterations required before the program exits when given a 2-variable problem with 15-nucleotide strands and a limit of 250 iterations.  The vanilla hill-climber would get stuck and never exited while the other two quickly reached a disjoint solution.  This 2-variable problem can be seen in Video 1.</p>
+
+<figure>
+<img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Number%20of%20Iterations%20Till%20Exit.png" alt="Missing figure 5: Iterations to exit">
+<figcaption>Figure 5: Number of Iterations to Exit</figcaption></figure>
+
+<p>The poor performance of the vanilla hill-climber seems to be directly tied to the fact that there are many unique solutions with the same score.  This creates a sort of "local minimum" in the search space which is actually a wide plateau where the neighboring solutions are neither better or worse.  Since the nearest neighbors can't improve the solution, the algorithm gets stuck.  One way to alleviate this may include changing the scoring function to try to maximize the minimum free energy (MFE) of the DNA set instead of minimizing the number of defects.  This would increase the resolution of the scoring function because several DNA sets with the same number of defects have differing MFEs.  Another possible improvement might be to have the algorithm accept new solutions that have the same score instead of only accepting better ones.</p>
+
+<p>In conclusion, hill-climbing methods can be very effective in DNA computer design as long as they have some sort of annealing or mutation property.  Greedy algorithms perform horribly as there are many local minima and plateaus in the solution space.</p>
 
 
 <h3>
