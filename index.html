@@ -12,7 +12,7 @@
   <script type="text/javascript" src="javascripts/script.js"></script>
 
   <title>CS 6600 DNA Computing Project</title>
-  <meta name="description" content="This is a project for an Intelligent Systems class which demonstrates the utility of using hill-climbing algorithms for turning a 3-SAT equation into a set of DNA strands for a DNA computer.">                                                                                          
+  <meta name="description" content="This is a project which demonstrates the utility of using hill-climbing algorithms for designing DNA computers.">                                                                                          
 
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
@@ -25,7 +25,7 @@
       <h1 class="title">CS 6600 DNA Computing Project</h1>
     </header>
     <div id="container">
-      <p class="tagline">This is a project for an Intelligent Systems class which demonstrates the utility of using hill-climbing algorithms for turning a 3-SAT equation into a set of DNA strands for a DNA computer.</p>                                                                                                   
+      <p class="tagline">This is a project which demonstrates the utility of using hill-climbing algorithms for designing DNA computers.</p>                                                                                                   
       <div id="main" role="main">
         <div class="download-bar">
         <div class="inner">
@@ -36,23 +36,25 @@
         <span class="blc"></span><span class="trc"></span>
         </div>
         <article class="markdown-body">
-          <h3>
+        
+<h3>
 <a id="word-of-caution" class="anchor" href="#word-of-caution" aria-hidden="true"><span class="octicon octicon-link"></span></a>Word of Caution</h3>
 
-<p>This software will only run on in Linux.</p>
+<p>This software will only run in Linux.</p>
+
 
 <h3>
 <a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h3>
 
-<p>Boolean satisfiability problems are known for being among the first problems to be defined as NP-complete.  In 2002, Ravinderjit S. Braich, Nickolas Chelyapov, Cliff Johnson, Paul W. K. Rothemund, and Leonard Adleman solved a <a href="http://www.sciencemag.org/content/296/5567/499.abstract">20-Variable 3-SAT problem using a DNA computer</a>.  This computer used massive parallelism made possible through DNA computing to search all 2^20 possible solutions to find the one correct solution in a non-exponential number of steps.  The software in this GitHub project is designed to come up with a set of DNA strands that can be used in a DNA computer similar to theirs.</p>
+<p>DNA computing is a budding field of research.  DNA computers are able to take advantage of massive parallelism to solve complex problems quickly.  However, one of the challenges in DNA computing is the complexity of designing DNA computers.  Sometimes the analysis required to design a DNA computer is more complex than the problem being solved by the computer.  Fortunately, the solution space in DNA computer design is usually not sparce.  Usually, when given a set of DNA design constraints, there are many acceptable solutions.  The purpose of this project is to evaluate the effectiveness of hill-climbing algorithms find those solutions.</p>
+
+<p>The example case in this project will be to find a set of DNA strands that can be used in a 3-SAT solver.  Boolean satisfiability problems are known for being among the first problems to be defined as NP-complete.  In 2002, Ravinderjit S. Braich, Nickolas Chelyapov, Cliff Johnson, Paul W. K. Rothemund, and Leonard Adleman solved a <a href="http://www.sciencemag.org/content/296/5567/499.abstract">20-Variable 3-SAT problem using a DNA computer</a>.  This computer used massive parallelism made possible through DNA computing to simultaneously search all 2^20 possible solutions to find the one correct solution.  The software in this GitHub project is designed to come up with a set of DNA strands that can be used in a DNA computer similar to theirs.</p>
+
 
 <h3>
 <a id="problem-description" class="anchor" href="#problem-description" aria-hidden="true"><span class="octicon octicon-link"></span></a>Problem Description</h3>
 
-
-<p>The goal of the project is to determine the utility of using a hill climbing algorithm to design DNA sequences useful for creating a DNA computer.  The project will compare the performance of three different hill-climbing variants: a regular hill-climber with mutation, a hill-climber with simulated annealing and mutation, and a "relaxed greediness" hill-climber of my own invention.</p>
-
-<p>The goal of the code is to input a 3-SAT problem and output a set of DNA strands that can represent the true and false states of each of the unique variables in the 3-SAT problem.  This requires a search in a combinatorial search space.  In order to create such a library of DNA strands, the DNA strands have to meet certain requirements:</p>
+<p>The project will compare the performance of three different hill-climbing variants: a regular hill-climber with mutation, a hill-climber with simulated annealing and mutation, and a "relaxed greediness" hill-climber of my own invention. These will be used in a code which inputs a 3-SAT problem and outputs a set of DNA strands that can represent the true and false states of each of the unique variables in the 3-SAT problem.  This requires a search in a combinatorial search space.  In order to create such a library of DNA strands, the DNA strands have to meet certain requirements:</p>
 
 <ul>
 <li>Each variable in the 3-SAT problem will be represented by a unique pair of unique DNA sequences: one of the pair represents False, the other represents True.</li>
@@ -60,12 +62,14 @@
 <li>Each unique DNA strand in the library must not bind to other strands in the library.</li>
 </ul>
 
+
 <h3>
 <a id="why-it-matters" class="anchor" href="#why-it-matters" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why It Matters</h3>
 
 <p>This project is important because there are many cases in DNA computing besides this one where DNA strands that have the above mentioned properties are desirable.  In order to represent a concept using a DNA strand, that DNA strand has to be unique, stable, and combine predictably.  Other DNA computers such as ones using toe-hold mediated strand displacement must have DNA strands with these properties.  Unexpected side reactions can easily break a DNA computer.  The self-assembly attribute of DNA strands is what makes DNA computing work, but it is simultaneously what makes the design of such computers hard.</p>
 
 <p>DNA computer design requires multiple searches in combinatorial solution space.  This requires efficient algorithms to be able to search the space, or an analytic method of solving the problem directly without searching.  Since an analytic method does not yet exist for DNA computer strand design, we must resort to searching.
+
 
 <h3>
 <a id="demonstration" class="anchor" href="#demonstration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demonstration</h3>
@@ -86,7 +90,8 @@
 
 <p><iframe width="420" height="315" src="https://www.youtube.com/embed/WSjGlEYZ9zY" frameborder="0" allowfullscreen></iframe></p>
 
-<p>Those who desire to try it for themselves can download the code from <a href="https://github.com/magicarrow2/CS-6600-DNA-Project">GitHub</a>.  The "test.txt" and "bigTest.txt" 3-SAT input files are included in the repository to give the user test examples.  The code was built using Netbeans 8 and a compiled binary has been included as well.  The nupack4.0.3 folder must be in the same directory as the  JAR binary for the program to work.</p>
+<p>Those who desire to try it for themselves can download the code from <a href="https://github.com/magicarrow2/CS-6600-DNA-Project">GitHub</a>.  The "test.txt" and "bigTest.txt" 3-SAT input files are included in the repository to give the user test examples.  The code was built using Netbeans 8 and a compiled binary has been included as well.  The nupack4.0.3 folder must be in the same directory as the JAR binary for the program to work.</p>
+
 
 <h3>
 <a id="how-it-works" class="anchor" href="#how-it-works" aria-hidden="true"><span class="octicon octicon-link"></span></a>How It Works</h3>
@@ -101,8 +106,16 @@
 
 <p>All three algorithms are hill-climbers, but they each have unique rules for moving to a new node in the search space.  The vanilla hill-climber accepts new versions of the DNA strand set only if they have a lower score.  The hill-climber with simulated annealing accepts worse scores with a decaying probability.  The hill-climber with "relaxed greediness" accepts all new DNA strand sets regardless of the score.  This last algorithm could be considered a type of control because it tests how well the strand/nucleotide substitution part of the algorithm finds a good solution by itself.  Since changing one nucleotide can drastically change the shape of the whole structure, it can make the solution better or worse.  It's a bit like a game of whack-a-mole, but the general trend should be towards improvement.</p>
 
-<p>It may be worth noting that in all of the algorithms, if duplicate strands appear in a new solution, one of the duplicates is replaced with a randomly generated strand.
-</p>
+<p>It may be worth noting that in all of the algorithms, if duplicate strands appear in a new solution, one of the duplicates is replaced with a randomly generated strand.</p>
+
+
+<h3>
+<a id="conclusions" class="anchor" href="#conclusions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusions</h3>
+
+<p>After running several tests with each of the three hill-climbing algorithms, the algorithm with relaxed greediness proved to perform the best.  Figure 1 shows the average percentage of hybridizing nucleotides for each of the algorithms when given a 10-variable problem and a limit of 150 iterations.  With a problem set that size, each iteration takes about a full second. <img src="https://raw.githubusercontent.com/magicarrow2/CS-6600-DNA-Project/gh-pages/images/Average%20Percentage%20of%20Defective%20Nucleotides.png" alt="average percentage of defective nucleotides"></p>
+
+
+
 
 <h3>
 <a id="acknowledgements" class="anchor" href="#acknowledgements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Acknowledgements</h3>
